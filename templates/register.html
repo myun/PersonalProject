@@ -1,0 +1,17 @@
+<html>
+<body>
+    <h1>Register</h1>
+    <form action="" method="post" name="register">
+        {{ form.hidden_tag() }}
+        <p>
+            Username: {{ form.username(size=80 )}}
+        </p>
+        <p>
+            Email: {{ form.email(size=80 )}}
+        </p>
+        <p>
+            Password: {{ form.password(size=40) }}
+        </p>
+    </form>
+</body>
+</html>
