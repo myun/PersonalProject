@@ -1,0 +1,70 @@
+<html lang="en">
+    <head>
+        <title>Edibles</title>
+        <link href="/static/css/bootstrap.css" rel="stylesheet">
+        <link href="/static/css/main.css" rel="stylesheet">
+        <link href="/static/css/login.css" rel="stylesheet">
+
+        <link rel="shortcut icon" href="url_for(/static/images/favicon.ico')" type="image/x-icon">
+        <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon">
+    </head>
+    <body>
+
+        <!-- Navigation bar -->
+        <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="navbar-collapse-1">
+                        <span class="sr-only">Toggle navigation</span>
+                    </button>
+                    <a class="navbar-brand" href="#">Edibles</a>
+                </div>
+                <div class="collapse navbar-collapse" id="navbar-collapse-1">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="/">No Account? Back to Registration >></a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-7">
+                </div>
+                <div class="col-sm-5">
+                    <div class="container">
+                        <div class = "top-box">
+                            <h1 class="page-heading">Welcome Back</h1>
+                            <p>Sign in to continue to Edibles.</p>
+                            <ul>
+                                {% for message in get_flashed_messages() %}
+                                    <li>{{ message }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+
+                        <div class = "bottom-box">
+                            <form class="loginform" action="" method="POST" name="login">
+                            <h2 class="loginform-heading">Log In</h2>
+                            {{ form.hidden_tag() }}
+                            <p>
+                                Email*: <br /> 
+                                {{ form.email(size=40) }}
+                            </p>
+                            <p>
+                                Password*: <br />
+                                {{ form.password(size=40) }}
+                            </p>
+                            <p class="required_field_note">* = required fields</p>
+
+                            <button type="submit" class="btn btn-primary">Submit</button>
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

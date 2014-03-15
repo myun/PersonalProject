@@ -1,0 +1,66 @@
+body {
+    background: url("http://wallgood.com/wp-content/uploads/2013/11/Baked-Chicken-Food-Wallpaper-HD.jpg") no-repeat center center fixed; 
+    padding-top: 65px;  
+	color: white; 
+	font-size: 16px;
+}
+
+h1 {
+	font-size: 40px;
+	font-family: Georgia, Times
+}
+
+h2 {
+	font-family: Georgia, Times
+}
+
+.container {
+	width:400px;
+	margin:30px 50px;
+	padding-bottom: 20px;
+	background-color: rgba(0, 0, 0, 0.6);
+	/*border-radius: 3%;*/
+}
+
+.top-box {
+	padding: 7px;
+}
+
+.bottom-box {
+	padding-left: 7px;
+	padding-right: 7px;
+}
+
+.registrationform {
+	width: 370px;
+	clear: both;
+}
+.registrationform input {
+	width: 95%;
+	clear: both;
+}
+
+.required_field_note {
+	font-size: 12px;
+}
+
+.navbar-default {
+    background: rgba(0, 0, 0, 0.8);
+    border-color: rgba(0, 0, 0, 0.8);
+}
+
+.navbar-default .navbar-brand {
+    color: #ffffff;
+    font-size: 25px;
+    font-family: Georgia, Times
+}
+
+.navbar-default .navbar-nav > li > a {
+	color: #ffffff;
+}
+
+.navbar-default .navbar-nav > li > a:hover,
+.navbar-default .navbar-nav > li > a:focus {
+    color: #fe9a2e;
+}
+

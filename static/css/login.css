@@ -1,0 +1,28 @@
+/*html, body {
+	height: 100%;
+	width: 100%
+}*/
+
+body {
+	background: url("/static/images/pancakes.jpg") no-repeat center center fixed; 
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+}
+
+/*.container {
+	max-width: 1340px;
+	overflow-x: auto;
+	width: 95%;
+	overflow-y: auto;
+	height:97%;
+	margin: 0 auto;
+}*/
+
+
+/*http://3.bp.blogspot.com/-ehSG0z86QjY/T-yIOr5FvaI/AAAAAAAAEhs/A85hBNU5-Ao/s1600/HDhut+%2818%29.jpg
+http://2.bp.blogspot.com/--3qFV3M4z84/T-yI_lIFJpI/AAAAAAAAEj0/BcpM_eIBDcE/s1600/HDhut+%2833%29.jpg
+
+
+/*http://www.wallpapers-hd.in/wp-content/uploads/2013/10/Food-Pancakes-Red-Strawberry-Fruit-Wallpaper-1007x629.jpg*/

@@ -1,17 +1,72 @@
-<html>
-<body>
-    <h1>Register</h1>
-    <form action="" method="post" name="register">
-        {{ form.hidden_tag() }}
-        <p>
-            Username: {{ form.username(size=80 )}}
-        </p>
-        <p>
-            Email: {{ form.email(size=80 )}}
-        </p>
-        <p>
-            Password: {{ form.password(size=40) }}
-        </p>
-    </form>
-</body>
+<html lang="en">
+    <head>
+        <title>Edibles</title>
+        <link href="/static/css/bootstrap.css" rel="stylesheet">
+        <link href="/static/css/main.css" rel="stylesheet">
+
+        <link rel="shortcut icon" href="/static/images/favicon.ico" type="image/x-icon">
+        <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon">
+    </head>
+    <body>
+
+        <!-- Navigation bar -->
+        <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="navbar-collapse-1">
+                        <span class="sr-only">Toggle navigation</span>
+                    </button>
+                    <a class="navbar-brand" href="#">Edibles</a>
+                </div>
+                <div class="collapse navbar-collapse" id="navbar-collapse-1">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="/login">Sign In</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <div class="container">
+            <div class = "top-box">
+                <h1 class="page-heading">Welcome to Edibles</h1>
+                <p> Edibles recommends recipes tailored for you based on your specific tastes and preferences. Meals made easy. 
+                </p>
+            </div>
+
+            <div class = "bottom-box">
+                <form class="registrationform" action="" method="POST" name="register">
+                    <h2 class="registrationform-heading">Register</h2>
+
+                    {{ form.hidden_tag() }}
+                    <p>
+                        Username*: <br /> 
+                        {{ form.username(size=40) }}
+                    </p>
+                    <p>
+                        Email*: <br /> 
+                        {{ form.email(size=40) }}
+                    </p>
+                    <p>
+                        Password*: <br /> 
+                        {{ form.password(size=40) }}
+                    </p>
+                    <p>
+                        Password*: <br /> 
+                        {{ form.confirm(size=40) }}
+                    </p>
+                    <p class="required_field_note">* = required fields</p>
+                    
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+                <ul>
+                    {% for message in get_flashed_messages() %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </body>
 </html>
+
+ 
