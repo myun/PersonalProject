@@ -1,5 +1,5 @@
 body {
-    background: url("http://wallgood.com/wp-content/uploads/2013/11/Baked-Chicken-Food-Wallpaper-HD.jpg") no-repeat center center fixed; 
+    background: url("/static/images/chicken.jpg") no-repeat center center fixed; 
     padding-top: 65px;  
 	color: white; 
 	font-size: 16px;
