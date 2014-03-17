@@ -11,13 +11,13 @@ body {
 h1 {
     color: #000000;
     font-size: 30px;
-    margin-bottom: 30px;
 }
 
 .container {
-   /* margin-bottom: 15px;*/
-    background-color: white;
-    opacity: 0.6;
+    margin-bottom: 0px;
+    /*background-color: white;
+    opacity: 0.6;*/
+    background-color: rgba(255, 255, 255, 0.6);
     width: 1200px;
     box-shadow: 0 0 20px black;
     padding-left: 75px;
@@ -28,5 +28,10 @@ h1 {
 
 .centered-text {
     text-align: center;
+}
+
+img {
+    padding-top: 15px;
+    padding-bottom: 15px;
 }
 
