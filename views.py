@@ -5,11 +5,6 @@ import forms
 app = Flask(__name__)
 app.config.from_object('config')
 
-# @app.route("/")
-# def register():
-#     form = forms.RegistrationForm(request.form)
-#     return render_template("register.html", form=form)
-
 @app.route("/", methods=['GET', 'POST'])
 def index():
 
@@ -31,6 +26,15 @@ def index():
 def login():
     form = forms.LoginForm(request.form)
     return render_template("login.html", form=form)
+
+@app.route("/recipebox")
+def recipebox():
+    return render_template("recipebox.html")
+
+@app.route("/logout")
+def logout():
+    # flash("You are now logged out")
+    return redirect(url_for("login"))
 
 if __name__ == "__main__":
     app.run(debug = True)

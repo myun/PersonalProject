@@ -20,50 +20,58 @@
                 </div>
                 <div class="collapse navbar-collapse" id="navbar-collapse-1">
                     <ul class="nav navbar-nav navbar-right">
-                        <li><a href="/login">Sign In</a></li>
+                        <li><a href="/login">Sign In >></a></li>
                     </ul>
                 </div>
             </div>
         </nav>
 
         <!-- Main content -->
-        <div class="container">
-            <div class = "top-box">
-                <h1 class="page-heading">Welcome to Edibles</h1>
-                <p> Edibles recommends recipes tailored for you based on your specific tastes and preferences. Meals made easy. 
-                </p>
-            </div>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-5">
+                    <div class="container">
+                        <div class = "top-box">
+                            <h1 class="page-heading">Welcome to Edibles</h1>
+                            <p> Edibles recommends recipes tailored for you based on your specific tastes and preferences. Meals made easy. 
+                            </p>
+                        </div>
 
-            <div class = "bottom-box">
-                <form class="registrationform" action="" method="POST" name="register">
-                    <h2 class="registrationform-heading">Register</h2>
+                        <div class = "bottom-box">
+                            <form class="registrationform" action="" method="POST" name="register">
+                                <h2 class="registrationform-heading">Register</h2>
 
-                    {{ form.hidden_tag() }}
-                    <p>
-                        Username*: <br /> 
-                        {{ form.username(size=40) }}
-                    </p>
-                    <p>
-                        Email*: <br /> 
-                        {{ form.email(size=40) }}
-                    </p>
-                    <p>
-                        Password*: <br /> 
-                        {{ form.password(size=40) }}
-                    </p>
-                    <p>
-                        Password*: <br /> 
-                        {{ form.confirm(size=40) }}
-                    </p>
-                    <p class="required_field_note">* = required fields</p>
-                    
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                </form>
-                <ul>
-                    {% for message in get_flashed_messages() %}
-                        <li>{{ message }}</li>
-                    {% endfor %}
-                </ul>
+                                {{ form.hidden_tag() }}
+                                <p>
+                                    Username*: <br /> 
+                                    {{ form.username(size=40) }}
+                                </p>
+                                <p>
+                                    Email*: <br /> 
+                                    {{ form.email(size=40) }}
+                                </p>
+                                <p>
+                                    Password*: <br /> 
+                                    {{ form.password(size=40) }}
+                                </p>
+                                <p>
+                                    Password*: <br /> 
+                                    {{ form.confirm(size=40) }}
+                                </p>
+                                <p class="required_field_note">* = required fields</p>
+                                
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </form>
+                            <ul>
+                                {% for message in get_flashed_messages() %}
+                                    <li>{{ message }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-7">    
+                </div>
             </div>
         </div>
     </body>
