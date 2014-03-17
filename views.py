@@ -15,8 +15,8 @@ def index():
         password = form.password.data
         user = User(username, email, password)
 
-        # model.session.add(user)
-        # model.session.commit()
+        model.session.add(user)
+        model.session.commit()
         # flash('Your account has been created!')
         # return redirect
 
@@ -27,9 +27,19 @@ def login():
     form = forms.LoginForm(request.form)
     return render_template("login.html", form=form)
 
+# TODO: Update route to /recipebox/<username> once database is fixed.
+# TODO: Create template for individual recipe page once database is fixed.
 @app.route("/recipebox")
 def recipebox():
     return render_template("recipebox.html")
+
+@app.route("/browse_recipes")
+def browse_recipes():
+    return render_template("browse_recipes.html")
+
+@app.route("/recipe/<recipename>")
+def view_recipe(recipename):
+    return render_template("recipe.html", recipename = recipename)
 
 @app.route("/logout")
 def logout():
