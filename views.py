@@ -1,9 +1,10 @@
-from flask import Flask, render_template, redirect, url_for, flash, request
-import forms
-# import model
+from flask import Flask, session, render_template, redirect, request, flash, url_for
+import model
 
 app = Flask(__name__)
-app.config.from_object('config')
+# app.config.from_object('config')
+app.secret_key = "mary"
+import forms
 
 @app.route("/", methods=['GET', 'POST'])
 def index():
@@ -13,13 +14,24 @@ def index():
         username = form.username.data
         email = form.email.data
         password = form.password.data
-        user = User(username, email, password)
 
-        model.session.add(user)
-        model.session.commit()
-        # flash('Your account has been created!')
+        # Prevent users from having the same usernames; usernames should be unique.
+        isExisting = model.session.query(model.User).filter_by(username=username).first()
+        if isExisting:
+            flash('This username already exists. Please select another one!')
+            return redirect(url_for("index"))
+
+        # Creates a new user account as long as the username is unique.
+        newuser = model.User(username=username, email=email, password=password)
+        print newuser
+        model.Session.add(newuser)
+        model.Session.commit()
+        flash('Your account has been created!')
+        # TODO: Update new user's homepage (where to direct user after logging in.)
         # return redirect
 
+    # If this line of code is reached, form.validate must have failed; passwords did not match or form was incomplete.
+    flash ('All fields are required and passwords must match. Please try again!')
     return render_template("register.html", title = "Register", form=form)
 
 @app.route("/login")
