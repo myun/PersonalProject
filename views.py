@@ -2,15 +2,18 @@ from flask import Flask, session, render_template, redirect, request, flash, url
 import model
 
 app = Flask(__name__)
-# app.config.from_object('config')
-app.secret_key = "mary"
+app.config.from_object('config')
 import forms
 
 @app.route("/", methods=['GET', 'POST'])
 def index():
 
     form = forms.RegistrationForm(request.form)
-    if request.method == 'POST' and form.validate():
+    if request.method == 'POST' and not form.validate():
+        flash ('All fields are required and passwords must match. Please try again!')
+        return redirect(url_for("index"))
+
+    elif request.method == "POST" and form.validate():
         username = form.username.data
         email = form.email.data
         password = form.password.data
@@ -23,20 +26,35 @@ def index():
 
         # Creates a new user account as long as the username is unique.
         newuser = model.User(username=username, email=email, password=password)
-        print newuser
         model.Session.add(newuser)
         model.Session.commit()
         flash('Your account has been created!')
-        # TODO: Update new user's homepage (where to direct user after logging in.)
-        # return redirect
+        # ------------------------  TODO: Update new user's homepage (where to direct user after logging in.)
+        # return redirect ---------------------
 
-    # If this line of code is reached, form.validate must have failed; passwords did not match or form was incomplete.
-    flash ('All fields are required and passwords must match. Please try again!')
     return render_template("register.html", title = "Register", form=form)
 
-@app.route("/login")
+@app.route("/login", methods=['GET', 'POST'])
 def login():
     form = forms.LoginForm(request.form)
+    if request.method == 'POST' and not form.validate():
+        flash("All fields are required. Please try again!")
+        return redirect(url_for("login"))
+    elif request.method == 'POST' and form.validate():
+        email = form.email.data
+        password = form.password.data
+
+        user = model.session.query(model.User).filter_by(email=email).first()
+
+        if not user:
+            flash("Incorrect username.")
+            return redirect(url_for("login"))
+
+        # ------------------------ TODO: Encrypt user's password when account first created, decrypt when logging in.
+        if user.password != password:
+            flash("Incorrect password.")
+            return redirect(url_for("login"))
+
     return render_template("login.html", form=form)
 
 # TODO: Update route to /recipebox/<username> once database is fixed.

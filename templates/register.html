@@ -40,6 +40,11 @@
                         <div class = "bottom-box">
                             <form class="registrationform" action="" method="POST" name="register">
                                 <h2 class="registrationform-heading">Register</h2>
+                                 <ul>
+                                {% for message in get_flashed_messages() %}
+                                    <li>{{ message }}</li>
+                                {% endfor %}
+                            </ul>
 
                                 {{ form.hidden_tag() }}
                                 <p>
@@ -62,11 +67,6 @@
                                 
                                 <button type="submit" class="btn btn-primary">Submit</button>
                             </form>
-                            <ul>
-                                {% for message in get_flashed_messages() %}
-                                    <li>{{ message }}</li>
-                                {% endfor %}
-                            </ul>
                         </div>
                     </div>
                 </div>

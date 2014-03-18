@@ -5,6 +5,8 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, backref
 
+import correlation
+
 
 ENGINE = None
 Session = None
@@ -24,6 +26,10 @@ class User(Base):
 #     id = Column(Integer, primary_key=True)
 #     name = Column(String(300), nullable=False)
 #     picture = Column(String(500), nullable=True)
+
+# class Rating(Base):
+    # __tablename__ = "ratings"
+    # id = Column(Integer, primary_key=True)
 
 ### End class declarations
 
