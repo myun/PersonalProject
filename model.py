@@ -7,15 +7,17 @@ from sqlalchemy.orm import relationship, backref
 
 import correlation
 
-
-ENGINE = None
-Session = None
-
 Base = declarative_base()
+
+ENGINE = create_engine("sqlite:///ratings.db", echo=True)
+Session = sessionmaker(bind=ENGINE)
+
+session=Session()
 
 ### Class declarations go here
 class User(Base):
 	__tablename__ = "users"
+
 	id = Column(Integer, primary_key=True)
 	username = Column(String(64), nullable=False)
 	email = Column(String(64), nullable=False)
@@ -23,25 +25,20 @@ class User(Base):
 
 # class Recipe(Base):
 #     __tablename__ = "recipes"
+
 #     id = Column(Integer, primary_key=True)
 #     name = Column(String(300), nullable=False)
 #     picture = Column(String(500), nullable=True)
 
+
 # class Rating(Base):
     # __tablename__ = "ratings"
+
     # id = Column(Integer, primary_key=True)
-
-### End class declarations
-
-def connect():
-	global ENGINE
-	global Session
-
-	ENGINE = create_engine("sqlite:///ratings.db", echo=True)
-	Session = sessionmaker(bind=ENGINE)
-
-	return Session()
-
+    # recipe_id = Column(Integer, ForeignKey('recipes.id'))
+    # user_id = Column(Integer, ForeignKey('users.id'))
+    # rating = Column(Integer, nullable=False)
+	
 def authenticate(username, password):
     query = """SELECT id FROM Users WHERE username = ? AND password = ?""" 
     DB.execute(query, (username, password))
@@ -51,9 +48,9 @@ def authenticate(username, password):
     else:
         return None
 
-def main():
-    """In case we need this for something"""
-    pass
+# def main():
+#     """In case we need this for something"""
+#     pass
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()

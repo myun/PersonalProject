@@ -26,8 +26,8 @@ def index():
 
         # Creates a new user account as long as the username is unique.
         newuser = model.User(username=username, email=email, password=password)
-        model.Session.add(newuser)
-        model.Session.commit()
+        model.session.add(newuser)
+        model.session.commit()
         flash('Your account has been created!')
         # ------------------------  TODO: Update new user's homepage (where to direct user after logging in.)
         # return redirect ---------------------
@@ -47,12 +47,12 @@ def login():
         user = model.session.query(model.User).filter_by(email=email).first()
 
         if not user:
-            flash("Incorrect username.")
+            flash("Incorrect username. Please try again!")
             return redirect(url_for("login"))
 
         # ------------------------ TODO: Encrypt user's password when account first created, decrypt when logging in.
         if user.password != password:
-            flash("Incorrect password.")
+            flash("Incorrect password. Please try again!")
             return redirect(url_for("login"))
 
     return render_template("login.html", form=form)
