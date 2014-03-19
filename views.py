@@ -59,9 +59,22 @@ def login():
 def recipebox():
     return render_template("recipebox.html")
 
+# Display (by category) all recipes in database for user browsing purposes.
 @app.route("/browse_recipes")
 def browse_recipes():
-    return render_template("browse_recipes.html")
+    categories = model.session.query(model.RecipeCategory).all()
+    categoried_recipes = {}
+
+    for category in categories:
+        common_category = category.common_category.name
+        recipe = category.recipe
+        if common_category not in categoried_recipes:
+            categoried_recipes[common_category] = [recipe]
+        else:
+            new_recipe_list = recipes[common_category].append(recipe)
+            categoried_recipes[common_category] = new_recipe_list
+
+    return render_template("browse_recipes.html", categoried_recipes=categoried_recipes)
 
 @app.route("/recipe/<recipename>")
 def view_recipe(recipename):
