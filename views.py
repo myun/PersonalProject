@@ -46,14 +46,10 @@ def login():
 
         user = model.session.query(model.User).filter_by(email=email).first()
 
-        if not user:
-            flash("Incorrect username. Please try again!")
+        if not user or user.password != password:
+            flash("Incorrect username or password. Please try again!")
             return redirect(url_for("login"))
-
-        # ------------------------ TODO: Encrypt user's password when account first created, decrypt when logging in.
-        if user.password != password:
-            flash("Incorrect password. Please try again!")
-            return redirect(url_for("login"))
+        session['user_email'] = email
 
     return render_template("login.html", form=form)
 
@@ -73,7 +69,8 @@ def view_recipe(recipename):
 
 @app.route("/logout")
 def logout():
-    # flash("You are now logged out")
+    session.clear()
+    flash("You are now logged out.")
     return redirect(url_for("login"))
 
 if __name__ == "__main__":
