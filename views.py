@@ -29,8 +29,7 @@ def index():
         model.session.add(newuser)
         model.session.commit()
         flash('Your account has been created!')
-        # ------------------------  TODO: Update new user's homepage (where to direct user after logging in.)
-        # return redirect ---------------------
+        return redirect(url_for("login"))
 
     return render_template("register.html", title = "Register", form=form)
 
@@ -50,6 +49,7 @@ def login():
             flash("Incorrect username or password. Please try again!")
             return redirect(url_for("login"))
         session['user_email'] = email
+        return redirect(url_for("browse_recipes"))
 
     return render_template("login.html", form=form)
 
@@ -70,7 +70,8 @@ def browse_recipes():
         common_category = category.common_category.name
         recipe = category.recipe
         if common_category not in categorized_recipes:
-            categorized_recipes[common_category] = [[recipe], [], []]
+            categorized_recipes[common_category] = [recipe]
+            # [[recipe], [], []]
         else:
 
             # For each category, evenly divide the recipes into sets of three for easier 
@@ -78,16 +79,18 @@ def browse_recipes():
             
             curr_recipe_list = categorized_recipes[common_category]
             
-            first_column = curr_recipe_list[0]
-            second_column = curr_recipe_list[1]
-            third_column = curr_recipe_list[2]
+            new_recipe_list = curr_recipe_list.append(recipe)
 
-            if len(second_column) < len(first_column):
-                second_column.append(recipe)
-            elif len(third_column) < len(second_column):
-                third_column.append(recipe)
-            else: 
-                first_column.append(recipe)
+            # first_column = curr_recipe_list[0]
+            # second_column = curr_recipe_list[1]
+            # third_column = curr_recipe_list[2]
+
+            # if len(second_column) < len(first_column):
+            #     second_column.append(recipe)
+            # elif len(third_column) < len(second_column):
+            #     third_column.append(recipe)
+            # else: 
+            #     first_column.append(recipe)
    
     return render_template("browse_recipes.html", categorized_recipes=categorized_recipes)
 

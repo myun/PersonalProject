@@ -1,32 +1,22 @@
 {% extends 'master.html' %}
 {% block body %}
+    
     <h1>Browse Recipes</h1>
     {% for category in categorized_recipes %}
     <h2>{{ category }} </h2>
         <div class="container-fluid">
             <div class="row">
-                <div class="col-sm-4 centered-text">
-                        {% for recipe in categorized_recipes[category][0] %}
-                        <img src={{ recipe.image_URL }} alt={{ recipe.name }} width="250" height="225">
-                        <p><a href={{recipe.orig_URL}}>{{ recipe.name }}</a></p>
-                        <span class="stars star1">Rating: 1 star out of 5</span>
-                        {% endfor %}
+                <div class="span12">
+                    {% for recipe in categorized_recipes[category] %}
+                    <div class="custom-container">
+                    <a href={{recipe.orig_URL}}><img src={{ recipe.image_URL }} alt={{ recipe.name }} width="250" height="225" class="img-thumbnail"></a>
+                    <p><a href={{recipe.orig_URL}}>{{ recipe.name }}</a></p>
+                    <span class="stars star1">Rating: 1 star out of 5</span>
+                    </div>
+                    {% endfor %}
                 </div>
-                <div class="col-sm-4 centered-text">
-                        {% for recipe in categorized_recipes[category][1] %}
-                        <img src={{ recipe.image_URL }} alt={{ recipe.name }} width="250" height="225">
-                        <p><a href={{recipe.orig_URL}}>{{ recipe.name }}</a></p>
-                        <span class="stars star1">Rating: 1 star out of 5</span>
-                        {% endfor %}
-                </div>
-                <div class="col-sm-4 centered-text">
-                        {% for recipe in categorized_recipes[category][2] %}
-                        <img src={{ recipe.image_URL }} alt={{ recipe.name }} width="250" height="225">
-                        <p><a href={{recipe.orig_URL}}>{{ recipe.name }}</a></p>
-                        <span class="stars star1">Rating: 1 star out of 5</span>
-                        {% endfor %}
-                </div>
-            </div>
+
+                
         </div>
     {% endfor %}
 {% endblock %}
