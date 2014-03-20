@@ -63,18 +63,33 @@ def recipebox():
 @app.route("/browse_recipes")
 def browse_recipes():
     categories = model.session.query(model.RecipeCategory).all()
-    categoried_recipes = {}
+    categorized_recipes = {}
 
+    # Sort all recipes in database into categories
     for category in categories:
         common_category = category.common_category.name
         recipe = category.recipe
-        if common_category not in categoried_recipes:
-            categoried_recipes[common_category] = [recipe]
+        if common_category not in categorized_recipes:
+            categorized_recipes[common_category] = [[recipe], [], []]
         else:
-            new_recipe_list = recipes[common_category].append(recipe)
-            categoried_recipes[common_category] = new_recipe_list
 
-    return render_template("browse_recipes.html", categoried_recipes=categoried_recipes)
+            # For each category, evenly divide the recipes into sets of three for easier 
+            # displaying purposes. Will display recipes horizontally (3 columns) for each category.
+            
+            curr_recipe_list = categorized_recipes[common_category]
+            
+            first_column = curr_recipe_list[0]
+            second_column = curr_recipe_list[1]
+            third_column = curr_recipe_list[2]
+
+            if len(second_column) < len(first_column):
+                second_column.append(recipe)
+            elif len(third_column) < len(second_column):
+                third_column.append(recipe)
+            else: 
+                first_column.append(recipe)
+   
+    return render_template("browse_recipes.html", categorized_recipes=categorized_recipes)
 
 @app.route("/recipe/<recipename>")
 def view_recipe(recipename):

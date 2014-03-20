@@ -1,47 +1,32 @@
 {% extends 'master.html' %}
 {% block body %}
     <h1>Browse Recipes</h1>
-
+    {% for category in categorized_recipes %}
+    <h2>{{ category }} </h2>
         <div class="container-fluid">
             <div class="row">
                 <div class="col-sm-4 centered-text">
-                    {% for category in categoried_recipes %}
-                    <h2>{{ category }} </h2>
-
-                        {% for recipe in categoried_recipes[category] %}
+                        {% for recipe in categorized_recipes[category][0] %}
                         <img src={{ recipe.image_URL }} alt={{ recipe.name }} width="250" height="225">
                         <p><a href={{recipe.orig_URL}}>{{ recipe.name }}</a></p>
+                        <span class="stars star1">Rating: 1 star out of 5</span>
                         {% endfor %}
-                    {% endfor %}
-
-                    <!-- <img src="http://www.simplyrecipes.com/wp-content/uploads/2006/07/pasta-primavera.jpg" alt="Sample Image" width="250" height="225">
-                    <p style="font-size:19px">Pasta Primavera </p> -->
-                    <!-- TODO: Sample Rating, to be updated later once database is working. -->
-                    <!-- <i class='glyphicon glyphicon-star'></i><i class='glyphicon glyphicon-star'></i><i class='glyphicon glyphicon-star'></i><i class='glyphicon glyphicon-star-empty'></i><i class='glyphicon glyphicon-star-empty'></i>
-    
-                    <p style="font-size:12px">34 Reviews</p>
-                    
-                        
-                    <img src="http://3.bp.blogspot.com/-Nxk55KSD2g0/T9wsNovhrFI/AAAAAAAALZ4/VqJpFBbnbf0/s1600/IMG_1905.JPG" alt="Sample Image" width="250" height="225">
-                    <p style="font-size:19px">Xavier Steak</p> 
-                    <i class='glyphicon glyphicon-star'></i><i class='glyphicon glyphicon-star'></i><i class='glyphicon glyphicon-star'></i><i class='glyphicon glyphicon-star-empty'></i><i class='glyphicon glyphicon-star-empty'></i>
-    
-                    <p style="font-size:12px">34 Reviews</p> -->
                 </div>
                 <div class="col-sm-4 centered-text">
-                   <!--  <img src="http://1.bp.blogspot.com/-Ek9Rmbepo5w/T4upY9FvyXI/AAAAAAAADsE/An7g_yxEq2k/s1600/Strawberry+Ombre+Cake-7.jpg" alt="Sample Image" width="250" height="225">
-                    <p style="font-size:19px">Strawberry Ombre Cake</p>
-                    <i class='glyphicon glyphicon-star'></i><i class='glyphicon glyphicon-star'></i><i class='glyphicon glyphicon-star'></i><i class='glyphicon glyphicon-star-empty'></i><i class='glyphicon glyphicon-star-empty'></i>
-    
-                    <p style="font-size:12px">34 Reviews</p> -->
+                        {% for recipe in categorized_recipes[category][1] %}
+                        <img src={{ recipe.image_URL }} alt={{ recipe.name }} width="250" height="225">
+                        <p><a href={{recipe.orig_URL}}>{{ recipe.name }}</a></p>
+                        <span class="stars star1">Rating: 1 star out of 5</span>
+                        {% endfor %}
                 </div>
                 <div class="col-sm-4 centered-text">
-                    <!-- <img src="http://i.huffpost.com/gen/1415549/thumbs/o-JELLO-SHRIMP-FROSTING-facebook.jpg" alt="Sample Image" width="250" height="225">
-                    <p style="font-size:19px">Jello Shrimp Salad</p>
-                    <i class='glyphicon glyphicon-star'></i><i class='glyphicon glyphicon-star'></i><i class='glyphicon glyphicon-star'></i><i class='glyphicon glyphicon-star-empty'></i><i class='glyphicon glyphicon-star-empty'></i>
-    
-                    <p style="font-size:12px">34 Reviews</p> -->
+                        {% for recipe in categorized_recipes[category][2] %}
+                        <img src={{ recipe.image_URL }} alt={{ recipe.name }} width="250" height="225">
+                        <p><a href={{recipe.orig_URL}}>{{ recipe.name }}</a></p>
+                        <span class="stars star1">Rating: 1 star out of 5</span>
+                        {% endfor %}
                 </div>
             </div>
         </div>
+    {% endfor %}
 {% endblock %}

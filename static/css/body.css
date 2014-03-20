@@ -17,6 +17,7 @@ h2 {
     color: #000000;
     text-align: left;
     text-decoration: underline;
+    font-size: 25px;
 }
 
 h1, h2, h3 {
@@ -24,7 +25,7 @@ h1, h2, h3 {
 }
 
 p {
-    margin-bottom: 40px;
+    margin-bottom: 20px;
     font-size: 18px;
 }
 
@@ -49,3 +50,34 @@ img {
     padding-top: 15px;
     padding-bottom: 15px;
 }
+
+span.stars {
+    background: url("/static/images/stars-blue.png") top left;
+    display: inline-block;
+    height: 21px;
+    width: 115px;
+    overflow: hidden;
+    text-indent: -9999px;
+}
+
+span.star1 {
+    background-position: -92px 0;
+}
+
+span.star2 {
+    background-position: -69px 0;
+}
+
+span.star3 {
+    background-position: -46px 0;
+}
+
+span.star4 {
+    background-position: -23px 0;
+}
+
+span.star5 {
+    background-position: 0 0;
+}
+
+
