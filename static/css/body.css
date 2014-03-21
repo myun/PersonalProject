@@ -86,19 +86,21 @@ span.star5 {
 
 /* For Plus Sign Icon - Visible by Hovering */
 
-.add_icon a{
+/*.add_icon a{
 visibility:hidden;
 }
 
 .add_icon:hover a {
  visibility:visible;
-}
+}*/
 
-.recipe-wrapper {
+/*.recipe-wrapper {
     position: relative;
-}
+    width: 255px;
+    height:250px;
+}*/
 
-.recipe-wrapper .recipe-thumbnail {
+/*.recipe-wrapper .recipe-thumbnail {
     position: relative;
 }
 
@@ -107,6 +109,13 @@ visibility:hidden;
     bottom: 5px;
     right: 40px;
     float: right;
+}*/
+
+input[type="checkbox"] {
+    position: absolute;
+    /*bottom: 65px;*/
+    right: 30px;
+    float: left;
 }
 
 

@@ -2,6 +2,8 @@
 {% block body %}
 
     <h1>Browse Recipes</h1>
+    <form>
+
     {% for category in categorized_recipes %}
     <h2>{{ category }} </h2>
         <div class="container-fluid">
@@ -12,15 +14,15 @@
                     <div class="recipe-wrapper">
                     <div class="recipe_thumbnail">
                         <a href={{recipe.orig_URL}}><img src={{ recipe.image_URL }} alt={{ recipe.name }} width="250" height="225" class="img-thumbnail"></a>
-
-                        <span class="add_icon">
-                        <a href='#'><img src='/static/images/add_icon.png' /></a></span>
+                         <input type="checkbox" class="chkbox" name="recipe_checkbox" id="recipe" value={{ recipe.id }}>
+                        <!-- <span class="add_icon">
+                        <a href='#'><img src='/static/images/add_icon.png' /></a></span> -->
                     </div>
                 </div>
 
                     
                     <p><a href={{recipe.orig_URL}}>{{ recipe.name }}</a></p>
-                    <span class="stars star1">Rating: 1 star out of 5</span>
+                    <span class="stars star+{{recipe.rating}}">Rating: 1 star out of 5</span>
                     {% endfor %}
                 </div>
                 <div class="col-sm-4 centered-text">
@@ -41,4 +43,31 @@
         </div> 
 
     {% endfor %}
+    <!-- <input type="button" id="btnClick" name="btnClick" value="Click" /> -->
+     <button type="submit" class="btn btn-default" id="btnClick" name="btnClick">Add to Recipe Box</button>
+</form>
+
+    <script language="javascript" type="text/javascript">
+        $(function(){
+            $('#btnClick').click(function(){
+                var clickedValues = [];
+                var currValue;
+                $(':checkbox:checked').each(function(){
+                    currValue = $(this).val();
+                    if (clickedValues.length < 1) {
+                        clickedValues.push(currValue);
+                    } else {
+                        for (var i=0; i<clickedValues.length; i++) {
+                            if (clickedValues[i] === currValue) {
+                                return;
+                            }
+                            clickedValues.push(currValue);
+                            console.log(currValue);
+                        };
+                    };
+                });
+                console.log(clickedValues);
+            });
+        });
+    </script>
 {% endblock %}
