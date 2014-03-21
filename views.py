@@ -48,8 +48,10 @@ def login():
         if not user or user.password != password:
             flash("Incorrect username or password. Please try again!")
             return redirect(url_for("login"))
+
         session['user_email'] = email
-        return redirect(url_for("browse_recipes"))
+        username = user.username
+        return redirect(url_for("browse_recipes", username=username))
 
     return render_template("login.html", form=form)
 
@@ -60,8 +62,8 @@ def recipebox():
     return render_template("recipebox.html")
 
 # Display (by category) all recipes in database for user browsing purposes.
-@app.route("/browse_recipes")
-def browse_recipes():
+@app.route("/<username>/browse_recipes")
+def browse_recipes(username):
     categories = model.session.query(model.RecipeCategory).all()
     categorized_recipes = {}
 
@@ -70,26 +72,32 @@ def browse_recipes():
         common_category = category.common_category.name
         recipe = category.recipe
         if common_category not in categorized_recipes:
-            categorized_recipes[common_category] = [[recipe], [], []]
+            categorized_recipes[common_category] =[recipe]
         else:
-
-            # For each category, evenly divide the recipes into sets of three for easier 
-            # displaying purposes. Will display recipes horizontally (3 columns) for each category.
-            
-            curr_recipe_list = categorized_recipes[common_category]
-            
-            first_column = curr_recipe_list[0]
-            second_column = curr_recipe_list[1]
-            third_column = curr_recipe_list[2]
-
-            if len(second_column) < len(first_column):
-                second_column.append(recipe)
-            elif len(third_column) < len(second_column):
-                third_column.append(recipe)
-            else: 
-                first_column.append(recipe)
+            categorized_recipes[common_category].append(recipe)
    
-    return render_template("browse_recipes.html", categorized_recipes=categorized_recipes)
+    return render_template("browse_recipes.html", username=username, categorized_recipes=categorized_recipes)
+
+@app.route("/<username>/browse_recipes", methods=['POST'])
+def save_recipes(username): 
+    user = model.session.query(model.User).filter_by(username=username).first()
+    user_id = user.id
+
+    recipes = request.form.getlist('recipe_checkbox')
+    for recipe in recipes:
+        recipe_id = int(recipe)
+
+        # Only save the new recipe to the user's recipe box if it is unique (not already existing
+        # in the box).
+        try:
+            model.session.query(model.SavedRecipe).filter_by(user_id=user_id, recipe_id=recipe_id).one()
+        except:
+            new_recipe = model.SavedRecipe(user_id=user_id, recipe_id=recipe_id)
+            model.session.add(new_recipe)
+            model.session.commit()
+
+    flash ("Successfully saved to your recipe box!")
+    return redirect(url_for("browse_recipes", username=username))
 
 @app.route("/recipe/<recipename>")
 def view_recipe(recipename):

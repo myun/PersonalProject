@@ -25,7 +25,7 @@
                 <div class="collapse navbar-collapse" id="navbar-collapse-1">
                     <ul class="nav navbar-nav navbar-right">
                         <li><a href="#">Suggest Recipes</a></li>
-                        <li><a href="{{ url_for("browse_recipes") }}">Browse Recipes</a></li>
+                        <li><a href="{{ url_for("browse_recipes", username=username) }}">Browse Recipes</a></li>
                         <li><a href="{{ url_for("recipebox") }}">My Recipe Box</a></li>
                         <li><form class="navbar-form navbar-right" role="search">
                         <div class="form-group">
