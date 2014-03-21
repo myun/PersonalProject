@@ -70,8 +70,7 @@ def browse_recipes():
         common_category = category.common_category.name
         recipe = category.recipe
         if common_category not in categorized_recipes:
-            categorized_recipes[common_category] = [recipe]
-            # [[recipe], [], []]
+            categorized_recipes[common_category] = [[recipe], [], []]
         else:
 
             # For each category, evenly divide the recipes into sets of three for easier 
@@ -79,18 +78,16 @@ def browse_recipes():
             
             curr_recipe_list = categorized_recipes[common_category]
             
-            new_recipe_list = curr_recipe_list.append(recipe)
+            first_column = curr_recipe_list[0]
+            second_column = curr_recipe_list[1]
+            third_column = curr_recipe_list[2]
 
-            # first_column = curr_recipe_list[0]
-            # second_column = curr_recipe_list[1]
-            # third_column = curr_recipe_list[2]
-
-            # if len(second_column) < len(first_column):
-            #     second_column.append(recipe)
-            # elif len(third_column) < len(second_column):
-            #     third_column.append(recipe)
-            # else: 
-            #     first_column.append(recipe)
+            if len(second_column) < len(first_column):
+                second_column.append(recipe)
+            elif len(third_column) < len(second_column):
+                third_column.append(recipe)
+            else: 
+                first_column.append(recipe)
    
     return render_template("browse_recipes.html", categorized_recipes=categorized_recipes)
 

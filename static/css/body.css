@@ -53,7 +53,6 @@ p {
 
 img {
     padding-top: 15px;
-    padding-bottom: 15px;
 }
 
 span.stars {
@@ -83,6 +82,31 @@ span.star4 {
 
 span.star5 {
     background-position: 0 0;
+}
+
+/* For Plus Sign Icon - Visible by Hovering */
+
+.add_icon a{
+visibility:hidden;
+}
+
+.add_icon:hover a {
+ visibility:visible;
+}
+
+.recipe-wrapper {
+    position: relative;
+}
+
+.recipe-wrapper .recipe-thumbnail {
+    position: relative;
+}
+
+.recipe-wrapper .add_icon {
+    position: absolute;
+    bottom: 5px;
+    right: 40px;
+    float: right;
 }
 
 
