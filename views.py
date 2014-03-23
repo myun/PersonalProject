@@ -55,11 +55,7 @@ def login():
 
     return render_template("login.html", form=form)
 
-# TODO: Update route to /recipebox/<username> once database is fixed.
 # TODO: Create template for individual recipe page once database is fixed.
-@app.route("/recipebox")
-def recipebox():
-    return render_template("recipebox.html")
 
 # Display (by category) all recipes in database for user browsing purposes.
 @app.route("/<username>/browse_recipes")
@@ -98,6 +94,30 @@ def save_recipes(username):
 
     flash ("Successfully saved to your recipe box!")
     return redirect(url_for("browse_recipes", username=username))
+
+@app.route("/<username>/recipebox")
+def recipebox(username):
+    user = model.session.query(model.User).filter_by(username=username).first()
+    user_id = user.id
+
+    categorized_recipes = {}
+    saved_recipes = model.session.query(model.SavedRecipe).filter_by(user_id=user_id).all()
+    
+    # Sort all user's recipes into categories.
+    for saved_recipe in saved_recipes:
+        recipe_data = saved_recipe.recipe
+        recipe_category = model.session.query(model.RecipeCategory).filter_by(recipe_id=recipe_data.id).first()
+        category_name = recipe_category.common_category.name
+
+        if category_name not in categorized_recipes:
+            categorized_recipes[category_name] =[recipe_data]
+        else:
+            categorized_recipes[category_name].append(recipe_data)
+
+    page_title = "My Recipe Box"
+    button_label = "Delete"
+    return render_template("recipebox.html", username=username, categorized_recipes=categorized_recipes,
+                            page_title=page_title, button_label=button_label)
 
 @app.route("/recipe/<recipename>")
 def view_recipe(recipename):
