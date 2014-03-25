@@ -1,0 +1,38 @@
+{% extends 'master.html' %}
+{% block body %}
+
+<form method="POST">
+    <h1>{{ page_title }}</h1> 
+    <hr>
+
+    {% for message in get_flashed_messages() %}
+        <li>{{ message }}</li>
+    {% endfor %}
+
+    <button type="submit" class="btn btn-default" id="btnClick" name="btnClick">{{ button_label }}</button>
+
+    {% for category in categorized_recipes %}
+    <h2>{{ category }} </h2>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="span12">
+                {% for recipe in categorized_recipes[category] %}
+                <div class="custom-container">
+                    <div class="recipe-wrapper">
+                        <a href="/{{ username }}/recipe/{{ recipe.name }}"><img src={{ recipe.image_URL }} alt={{ recipe.name }} width="250" height="225" class="img-thumbnail"></a>
+                        <input type="checkbox" class="chkbox" name="recipe_checkbox" value={{ recipe.id }}> 
+                    </div>
+                <p><a href="/{{ username }}/recipe/{{ recipe.name }}">{{ recipe.name }}</a></p>
+                <p><span class="stars star+{{recipe.rating}}">Rating: 1 star out of 5</span> (65)</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endfor %} 
+    <button type="submit" class="btn btn-default" id="btnClick" name="btnClick">{{ button_label }}</button>
+    <br />
+    <hr>
+</form>
+
+{% endblock %}

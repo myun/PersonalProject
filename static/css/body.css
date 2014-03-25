@@ -29,6 +29,7 @@ h2 {
 p {
     margin-bottom: 20px;
     font-size: 18px;
+    color: #393939;
 }
 
 .container {
@@ -145,3 +146,34 @@ hr {
     left: 0;
     top: 50px;*/
 }
+
+#btnRate{
+    background-color: #fe9a2e;
+    border-color: #fe9a2e;
+    color: #ffffff;
+}
+
+.rating {
+    display: inline-block;
+}
+.rating-input {
+    float: right;
+    opacity: 0;
+}
+.rating:hover .rating-star:hover,
+.rating:hover .rating-star:hover ~ .rating-star,
+.rating-input:checked ~ .rating-star {
+    
+    /* Display colored-in star. */
+    background-position: 0 0;
+}
+.rating-star,
+.rating:hover .rating-star {
+    float: right;
+    width: 16px;
+    height: 16px;
+
+    /*Display empty star.*/
+    background: url('/static/images/star.png') 0 -16px;
+}
+

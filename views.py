@@ -55,8 +55,6 @@ def login():
 
     return render_template("login.html", form=form)
 
-# TODO: Create template for individual recipe page once database is fixed.
-
 # Display (by category) all recipes in database for user browsing purposes.
 @app.route("/<username>/browse_recipes")
 def browse_recipes(username):
@@ -71,8 +69,12 @@ def browse_recipes(username):
             categorized_recipes[common_category] =[recipe]
         else:
             categorized_recipes[common_category].append(recipe)
+
+    page_title = "Browse Recipes"
+    button_label = "Save to Recipe Box"
    
-    return render_template("browse_recipes.html", username=username, categorized_recipes=categorized_recipes)
+    return render_template("recipe_thumbnails.html", username=username, categorized_recipes=categorized_recipes,
+                            page_title=page_title, button_label=button_label)
 
 @app.route("/<username>/browse_recipes", methods=['POST'])
 def save_recipes(username): 
@@ -93,6 +95,7 @@ def save_recipes(username):
             model.session.commit()
 
     flash ("Successfully saved to your recipe box!")
+
     return redirect(url_for("browse_recipes", username=username))
 
 @app.route("/<username>/recipebox")
@@ -106,22 +109,80 @@ def recipebox(username):
     # Sort all user's recipes into categories.
     for saved_recipe in saved_recipes:
         recipe_data = saved_recipe.recipe
-        recipe_category = model.session.query(model.RecipeCategory).filter_by(recipe_id=recipe_data.id).first()
-        category_name = recipe_category.common_category.name
-
-        if category_name not in categorized_recipes:
-            categorized_recipes[category_name] =[recipe_data]
-        else:
-            categorized_recipes[category_name].append(recipe_data)
+        recipe_categories = model.session.query(model.RecipeCategory).filter_by(recipe_id=recipe_data.id).all()
+        
+        for category in recipe_categories:
+            category_name = category.common_category.name
+            if category_name not in categorized_recipes:
+                categorized_recipes[category_name] =[recipe_data]
+            else:
+                categorized_recipes[category_name].append(recipe_data)
 
     page_title = "My Recipe Box"
     button_label = "Delete"
-    return render_template("recipebox.html", username=username, categorized_recipes=categorized_recipes,
+
+    return render_template("recipe_thumbnails.html", username=username, categorized_recipes=categorized_recipes,
                             page_title=page_title, button_label=button_label)
 
-@app.route("/recipe/<recipename>")
-def view_recipe(recipename):
-    return render_template("recipe.html", recipename = recipename)
+@app.route("/<username>/recipebox", methods=["POST"])
+def delete_recipes(username):
+    user = model.session.query(model.User).filter_by(username=username).first()
+    user_id = user.id
+
+    recipes = request.form.getlist('recipe_checkbox')
+    for recipe in recipes:
+        recipe_id = int(recipe)
+
+        new_recipe = model.session.query(model.SavedRecipe).filter_by(user_id=user_id, recipe_id=recipe_id).one()
+        model.session.delete(new_recipe)
+        model.session.commit()
+
+    flash ("Successfully deleted from your recipe box!")
+
+    return redirect(url_for("recipebox", username=username))
+
+# TODO: Create template for individual recipe page once database is fixed.
+
+@app.route("/<username>/recipe/<recipe_name>")
+def view_recipe(username, recipe_name):
+    recipe = model.session.query(model.Recipe).filter_by(name=recipe_name).one()
+    recipe_id = recipe.id
+
+    ingredient_list = {}
+    ingredients = model.session.query(model.RecipeIngredient).filter_by(recipe_id=recipe_id).all()
+    for ingredient in ingredients:
+        ingredient_name = ingredient.common_ingredient.name 
+        ingredient_amount = ingredient.amount 
+        ingredient_list[ingredient_name] = ingredient_amount
+
+    category_list = ""
+    recipe_categories = model.session.query(model.RecipeCategory).filter_by(recipe_id=recipe_id).all()
+    for category in recipe_categories:
+        category_name = category.common_category.name
+        category_list += category_name + ", "
+
+    # Remove the very last ", " from the end of the list
+    list = category_list[:-2]
+
+    return render_template("recipe.html", username=username, recipe=recipe, ingredient_list=ingredient_list, 
+                           category_list=list)
+
+@app.route("/<username>/recipe/<recipe_name>", methods=["POST"])
+def rate_recipe(username, recipe_name):
+    # Get user rating data from form.
+    rating = int(request.form['rating-input-1'])
+    recipe = model.session.query(model.Recipe).filter_by(name=recipe_name).one()
+    recipe_id = recipe.id
+
+    user = model.session.query(model.User).filter_by(username=username).first()
+    user_id = user.id
+
+    saved_recipe = model.session.query(model.SavedRecipe).filter_by(user_id=user_id, recipe_id=recipe_id).one()
+    saved_recipe.rating = rating
+    model.session.commit()
+
+    return redirect(url_for("view_recipe", username=username, recipe_name=recipe_name))
+
 
 @app.route("/logout")
 def logout():
