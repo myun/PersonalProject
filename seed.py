@@ -8,7 +8,7 @@ common_categories = []
 
 # Seeds database with recipe data scraped from BigOven.com
 def process_data(session):
-    with open("seed_data/recipes.csv") as f:
+    with open("seed_data/bigoven.csv") as f:
         reader = csv.reader(f)
         for row in reader:
             ingredient_names, name, orig_URL, orig_rating, num_ratings, image_URL, directions, serving_size, ingredient_amounts, categories = row
@@ -21,6 +21,7 @@ def process_data(session):
 
             # Convert the name, ingredient names, and directions of the recipe in case foreign characters were originally used. 
             name = name.decode("latin-1")
+            name = name.upper()
             ingredient_names = ingredient_names.decode("latin-1")
             directions = directions.decode("latin-1")
 
@@ -33,11 +34,12 @@ def process_data(session):
             # Format categories from string to list of strings.
             categories = process_categories(categories)
 
-            load_recipes(session, name, orig_URL, orig_rating, num_ratings, image_URL, serving_size, directions)
-            load_common_ingredients(session, ingredient_names)
-            load_recipe_ingredients(session, name, ingredient_names, ingredient_amounts)
-            load_common_categories(session, categories)
-            load_recipes_categories(session, name, categories)
+            if (len(ingredient_names) == len(ingredient_amounts)):
+                load_recipes(session, name, orig_URL, orig_rating, num_ratings, image_URL, serving_size, directions)
+                load_common_ingredients(session, ingredient_names)
+                load_recipe_ingredients(session, name, ingredient_names, ingredient_amounts)
+                load_common_categories(session, categories)
+                load_recipes_categories(session, name, categories)
 
 def load_recipes(session, name, orig_URL, orig_rating, num_ratings, image_URL, serving_size, directions):
     recipe = model.Recipe(name=name,
