@@ -29,9 +29,12 @@ class Recipe(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(150), nullable=False)
+    orig_site = Column(String(150), nullable=False)
     orig_URL = Column(String(240), nullable=False)
+    orig_rating = Column(Integer, nullable = True)
+    num_ratings = Column(Integer, nullable = True)
     image_URL = Column(String(240), nullable=True)
-    serving_size = Column(Integer, nullable=True)
+    serving_size = Column(String(100), nullable=True)
     directions = Column(String(12000000), nullable=False)
 
 class SavedRecipe(Base):
@@ -40,7 +43,8 @@ class SavedRecipe(Base):
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('users.id'))
     recipe_id = Column(Integer, ForeignKey('recipes.id'))
-    rating = Column(Integer, nullable=True)
+    user_rating = Column(Integer, nullable=True)
+    user_notes = Column(String(350), nullable=True)
 
     user = relationship("User", backref=backref("savedrecipes", order_by=id))
     recipe = relationship("Recipe", backref=backref("savedrecipes", order_by=id))
@@ -55,7 +59,7 @@ class RecipeIngredient(Base):
     __tablename__ = "recipe_ingredients"
 
     id = Column(Integer, primary_key=True)
-    amount = Column(String(50), nullable=False)
+    amount = Column(String(50), nullable=True)
     recipe_id = Column(Integer, ForeignKey('recipes.id'))
     common_ingredient_id = Column(Integer, ForeignKey('common_ingredients.id'))
 

@@ -1,14 +1,10 @@
 {% extends 'master.html' %}
 {% block body %}
 
-{% for message in get_flashed_messages() %}
-     <li>{{ message }}</li>
-{% endfor %}
-
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-3">
-            <a href="/{{ username }}/recipe/{{ recipe.name }}"><img src={{ recipe.image_URL }} alt={{ recipe.name }} width="250" height="225" class="img-circle"></a>
+            <a href="/{{ username }}/recipe/{{ recipe.name }}"><img src={{ recipe.image_URL }} alt={{ recipe.name }} width="250" height="250" class="img-circle"></a>
         </div>
         <div class="col-md-9">
             <h1>{{ recipe.name }}</h1>
@@ -16,9 +12,14 @@
              <p><b>Categories:</b> {{ category_list }} <br />
                 <b>Yield:</b> {{ recipe.serving_size }} servings <br />
                 <b>Recipe courtesy of </b><a href={{ recipe.orig_URL}}>Food Network Kitchen <!--
-                {{ recipe.orig_site }} --> </a>
+                {{ recipe.orig_site }} --> </a><br />
             </p>
+            {% if user_rating != "empty" %}
+                <p><b>Your previous rating: </b><span class="stars star{{ user_rating }}"></span></p>
+            {% endif %}
+
             <form role="form" method="POST" id="rating-form">
+                <button type="submit" class="btn btn-default" id="btnRate" name="btnRate">Rate Me!</button>
                 <span class="rating">
                     <input type="radio" class="rating-input" id="rating-input-1-5" name="rating-input-1" value="5">
                     <label for="rating-input-1-5" class="rating-star"></label>
@@ -30,9 +31,11 @@
                     <label for="rating-input-1-2" class="rating-star"></label>
                     <input type="radio" class="rating-input" id="rating-input-1-1" name="rating-input-1" value="1">
                     <label for="rating-input-1-1" class="rating-star"></label>
-                </span>
-                <button type="submit" class="btn btn-default" id="btnRate" name="btnRate">Rate Me!</button>
-            </form>
+                </span> 
+            </form> 
+            {% for message in get_flashed_messages() %}
+        <li>{{ message }}</li>
+    {% endfor %}
         </div>
     </div>
     <div class="row">
@@ -67,6 +70,23 @@
     $('#edit-btn').click(function(e){
         console.log('User wishes to edit content!');
     });
+
+    // $(document.ready(function(){
+    //     var formSubmitButton = $("btnRate");
+
+    //     formSubmitButton.on("click", function(event){
+    //         event.preventDefault();
+    //         $.ajax({
+    //             url:"/<username>/recipe/<recipe_name>",
+    //             method: "POST",
+    //             data: $("form#rating-form").serialize(),
+    //         })
+    //         .done(function(data) {
+    //             $()
+    //         }).fail(function(){
+    //             alert("FAIL");
+    //         });
+    //     });
 </script>
 
 {% endblock %}

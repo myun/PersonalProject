@@ -36,7 +36,7 @@ p {
     margin-bottom: 0px;
     /*background-color: white;
     opacity: 0.6;*/
-    background-color: rgba(255, 255, 255, 0.6);
+    background-color: rgba(255, 255, 255, 0.7);
     width: 1200px;
     box-shadow: 0 0 20px black;
     padding-left: 5%;
@@ -151,13 +151,15 @@ hr {
     background-color: #fe9a2e;
     border-color: #fe9a2e;
     color: #ffffff;
+    position:absolute;
 }
 
 .rating {
     display: inline-block;
+    padding-left:25px;
 }
 .rating-input {
-    float: right;
+    float: left;
     opacity: 0;
 }
 .rating:hover .rating-star:hover,
@@ -167,13 +169,12 @@ hr {
     /* Display colored-in star. */
     background-position: 0 0;
 }
-.rating-star,
-.rating:hover .rating-star {
+.rating-star {
     float: right;
-    width: 16px;
-    height: 16px;
+    width: 21px;
+    height: 21.75px;
 
     /*Display empty star.*/
-    background: url('/static/images/star.png') 0 -16px;
+    background: url('/static/images/stars.png') 0 -21px;
 }
 

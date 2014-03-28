@@ -141,12 +141,13 @@ def delete_recipes(username):
 
     return redirect(url_for("recipebox", username=username))
 
-# TODO: Create template for individual recipe page once database is fixed.
-
 @app.route("/<username>/recipe/<recipe_name>")
 def view_recipe(username, recipe_name):
     recipe = model.session.query(model.Recipe).filter_by(name=recipe_name).one()
     recipe_id = recipe.id
+
+    user = model.session.query(model.User).filter_by(username=username).first()
+    user_id = user.id
 
     ingredient_list = {}
     ingredients = model.session.query(model.RecipeIngredient).filter_by(recipe_id=recipe_id).all()
@@ -164,8 +165,18 @@ def view_recipe(username, recipe_name):
     # Remove the very last ", " from the end of the list
     list = category_list[:-2]
 
+    # The variable user_rating will only have a true user rating value if the recipe was both 
+    # saved in the user's recipe box and if the user has already input a rating value for that recipe.
+    saved_recipe = model.session.query(model.SavedRecipe).filter_by(user_id=user_id, recipe_id=recipe_id).first()
+    if saved_recipe:
+        user_rating = saved_recipe.rating
+        if not user_rating:
+            user_rating = "empty"
+    else:
+        user_rating = "empty"
+
     return render_template("recipe.html", username=username, recipe=recipe, ingredient_list=ingredient_list, 
-                           category_list=list)
+                           category_list=list, user_rating=user_rating)
 
 @app.route("/<username>/recipe/<recipe_name>", methods=["POST"])
 def rate_recipe(username, recipe_name):
@@ -177,9 +188,17 @@ def rate_recipe(username, recipe_name):
     user = model.session.query(model.User).filter_by(username=username).first()
     user_id = user.id
 
-    saved_recipe = model.session.query(model.SavedRecipe).filter_by(user_id=user_id, recipe_id=recipe_id).one()
-    saved_recipe.rating = rating
-    model.session.commit()
+    saved_recipe = model.session.query(model.SavedRecipe).filter_by(user_id=user_id, recipe_id=recipe_id).first()
+    if saved_recipe:
+        saved_recipe.rating = rating
+        model.session.commit()
+        flash ("Successfully submitted your rating!")
+    else:
+        saved_recipe = model.SavedRecipe(user_id=user_id, recipe_id=recipe_id, rating=rating)
+        model.session.add(saved_recipe)
+        model.session.commit()
+        flash ("Successfully saved to your recipe box and submitted your rating!")
+    # --------------- TODO: Will need to update overall recipe rating later.
 
     return redirect(url_for("view_recipe", username=username, recipe_name=recipe_name))
 
