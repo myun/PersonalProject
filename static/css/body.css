@@ -28,7 +28,6 @@ h2 {
 
 p {
     margin-bottom: 20px;
-    font-size: 18px;
     color: #393939;
 }
 
@@ -114,10 +113,11 @@ visibility:hidden;
 }*/
 
 input[type="checkbox"] {
-    position: absolute;
+    /*position: absolute;*/
     /*bottom: 65px;*/
     /*right: 30px;*/
-    float: left;
+    /*float: left;*/
+    float: right;
     margin-left: 5px;
 }
 
@@ -176,5 +176,21 @@ hr {
 
     /*Display empty star.*/
     background: url('/static/images/stars.png') 0 -21px;
+}
+
+#search-btn {
+    margin-left: 10px;
+    font-size: 18px;
+    padding-left:5px;
+    padding-top: 4px;
+    padding-right: 3px;
+    padding-bottom: 6px;
+/*    padding-left: 8px;
+    padding-right: 8px;*/
+}
+
+.search-bar {
+    margin-bottom: 65px;
+    margin-left: 15px;
 }
 

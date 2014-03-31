@@ -1,8 +1,14 @@
 {% extends 'master.html' %}
 {% block head %}
+
+<!-- <link href="/static/css/search.css" rel="stylesheet">
+ --> <!-- <link href="/static/css/gridtest.css" rel="stylesheet">
+ --><link href="/static/css/gridtest2.css" rel="stylesheet">
+
 <script src="/static/js/jquery-1.10.2.min.js" type="text/javascript"></script>
 <script src="/static/js/freewall.js" type="text/javascript"></script>
-
+<!-- <script src="/static/js/jquery.lazyload.min.js" type="text/javascript"></script>
+ -->
 <style type="text/css">
             body {
                 background: rgba(231, 231, 231, 0.43);
@@ -22,12 +28,36 @@
                 padding: 0px;
                 display: block;
             }
+            h4 {
+                text-shadow: 1px 1px 0 rgba(0,0,0,0.5);
+                font-family: 'Lato', Georgia, Helvetica, Tahoma;
+                margin: 10px 0;
+                font-weight: normal;
+            }
+
+            span {
+                float:left;
+                position:relative;
+                margin-right:5px;
+                bottom:2px;
+            }
+}
 </style>
+
+ <script type="text/javascript">
+// $(function() {
+//     $("img.lazy").lazyload();
+// });
+// </script>
+
 
 {% endblock %}
 {% block body %}
 
-<h1>{{ page_title }}</h1> 
+<!-- <form method="POST" action="/{{ username }}/search" class="form-wrapper cf">
+  <input name="searched_ingredient" type="text" placeholder="Search by ingredient...">
+  <button type="submit">Search</button>
+</form> -->
 
 <div class="search-bar">
 <form role="form" method="POST">
@@ -35,29 +65,28 @@
     <button type="submit" class="btn btn-info btn-sm pull-left" id="search-btn"><span class="glyphicon glyphicon-search"></span></button>
 </form>
 </div>
-<a href='/{{ username }}/advancedsearch'>Advanced Search</a>
 
 <form method="POST" action="/{{ username }}/browse_recipes">
-<hr>
+    <div id="freewall" class="free-wall">
+        {% for category in categorized_recipes %}
+        {% for recipe in categorized_recipes[category] %}
+        <div class="brick">
+            <img src={{ recipe.image_URL }} width="100%" class="lazy">
+            <div class="info">
+                <input type="checkbox" class="chkbox" name="recipe_checkbox" value={{ recipe.id }}> 
+                <h4><a href="/{{ username }}/recipe/{{ recipe.name }}" style="color:black">{{ recipe.name }}</a></h4>
+                <p><span class="stars star{{recipe.orig_rating}}"></span> ({{ recipe.num_ratings }})</p>
+            </div>
+        </div>
+        {% endfor %}
+        {% endfor %}
+    </div>
+</form>
 
-<!-- <div class="custom-container">
-    {% for category in categorized_recipes %}
-        <h2><a href="#{{ category }}"> {{ category }} </a></h2>
-    {% endfor %}
-</div> -->
+    
+<!--
 
-    {% for message in get_flashed_messages() %}
-        <li>{{ message }}</li>
-    {% endfor %}
-
-    <button type="submit" class="btn btn-default" id="btnClick" name="btnClick">{{ button_label }}</button>
-
-    {% for category in categorized_recipes %}
-    <h2><!-- <a name={{ category}}> --> {{ category }}<!--  </a> --></h2>
-    <div class="container-fluid">
-        <div class="row">
-            
-            <div class="span12">
+    <div class="span12">
                 
                 {% for recipe in categorized_recipes[category] %}
                 <div class="custom-container">
@@ -72,14 +101,11 @@
                 
 
             </div>
+</div>
 
-        </div>
-    </div>
-    {% endfor %} 
-    <button type="submit" class="btn btn-default" id="btnClick" name="btnClick">{{ button_label }}</button>
-    <br />
-    <hr>
-</form>
+-->
+
+
 
 <script type="text/javascript">
             var wall = new freewall("#freewall");
@@ -94,6 +120,7 @@
             });
             
             var images = wall.container.find('.brick');
+            
             var length = images.length;
             images.css({visibility: 'hidden'});
             images.find('img').load(function() {
@@ -105,6 +132,9 @@
                     }, 505);
                 }
             });
+
+
+            //setTimeout has 505.
 
         </script>
 
