@@ -11,6 +11,7 @@ body {
 h1 {
     color: #393939;
     text-align: left;
+    margin-right: 150px;
 }
 
 h2 {
@@ -192,5 +193,9 @@ hr {
 .search-bar {
     margin-bottom: 65px;
     margin-left: 15px;
+}
+
+li {
+    list-style-type: none;
 }
 

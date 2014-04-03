@@ -30,8 +30,8 @@
 <h1>{{ page_title }}</h1> 
 
 <div class="search-bar">
-<form role="form" method="POST">
-    <input type="text" class="col-md-3" placeholder="Search by Ingredient...">
+<form role="form" method="POST" action="/{{ username }}/search">
+    <input type="text" class="col-md-3" name="searched_ingredient" placeholder="Search by Ingredient...">
     <button type="submit" class="btn btn-info btn-sm pull-left" id="search-btn"><span class="glyphicon glyphicon-search"></span></button>
 </form>
 </div>
@@ -66,7 +66,7 @@
                         <input type="checkbox" class="chkbox" name="recipe_checkbox" value={{ recipe.id }}> 
                     </div>
                 <p><a href="/{{ username }}/recipe/{{ recipe.name }}">{{ recipe.name }}</a></p>
-                <p><span class="stars star+{{recipe.rating}}">Rating: 1 star out of 5</span> (65)</p>
+                <p><span class="stars star{{recipe.orig_rating}}"></span>({{ recipe.num_ratings }})</p>
                 </div>
                 {% endfor %}
                 

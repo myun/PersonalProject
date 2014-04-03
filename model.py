@@ -6,8 +6,6 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.dialects.mysql import TINYTEXT, MEDIUMTEXT
 
-# import correlation
-
 Base = declarative_base()
 
 ENGINE = create_engine("sqlite:///ratings.db", echo=True)
@@ -49,6 +47,18 @@ class SavedRecipe(Base):
     user = relationship("User", backref=backref("savedrecipes", order_by=id))
     recipe = relationship("Recipe", backref=backref("savedrecipes", order_by=id))
 
+class RatedIngredient (Base):
+    __tablename__ = "rated_ingredients"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    common_ingredient_id = Column(Integer, ForeignKey('common_ingredients.id'))
+    rating = Column(Integer, nullable=True)
+    num_occurrences = Column(Integer, nullable=True)
+
+    user = relationship("User", backref=backref("rated_ingredients", order_by=id))
+    common_ingredient = relationship("CommonIngredient", backref=backref("rated_ingredients", order_by=id))
+
 class CommonIngredient(Base):
     __tablename__ = "common_ingredients"
 
@@ -80,12 +90,4 @@ class RecipeCategory(Base):
     common_category_id = Column(Integer, ForeignKey('common_categories.id'))
 
     recipe = relationship("Recipe", backref=backref("recipe_categories", order_by=id))
-    common_category = relationship("CommonCategory", backref=backref("common_categories", order_by=id))
-
-
-# def main():
-#     """In case we need this for something"""
-#     pass
-
-# if __name__ == "__main__":
-#     main()
+    common_category = relationship("CommonCategory", backref=backref("recipe_categories", order_by=id))

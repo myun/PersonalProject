@@ -11,7 +11,7 @@
                 <button type="submit" id="save-btn" class="btn btn-info btn-sm pull-right">Save to Recipe Box</button>
                 <h1>{{ recipe.name }}</h1>
             </form>
-             <p><span class="stars star{{recipe.rating}}"></span> ({{ recipe.num_ratings }})</p>
+             <p><span class="stars star{{recipe.orig_rating}}"></span> ({{ recipe.num_ratings }})</p>
              <p><b>Categories:</b> {{ category_list }} <br />
                 <b>Yield:</b> {{ recipe.serving_size }}<br />
                 <b>Recipe courtesy of </b><a href={{ recipe.orig_URL }}>
@@ -50,13 +50,9 @@
         </div>
         <div class="col-md-9">
             <h2>Directions</h2>
-            {{ recipe.directions }}
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-3">
-        </div>
-         <div class="col-md-9">
+            {% for direction in processed_directions %}
+                <p>{{ direction }}</p>
+            {% endfor %}
             <h2>My Notes <span id="edit-btn" class="glyphicon glyphicon-edit"></span></h2>
 
             {% if note_list != "empty" %}
@@ -64,7 +60,7 @@
                     <p>{{ note }}</p>
                 {% endfor %}
             {% endif %}
-            <div class="alert-message">
+            <div class="alert alert-success">
                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Success!</div>
 
             <form role="form" method="POST" action="/{{ username }}/save_notes/{{ recipe.name }}">
@@ -80,11 +76,8 @@
     $('#edit-btn').click(function(e){
         console.log('User wishes to edit content!');
     });
-    window.setTimeout(function() {
-        $(".alert-message").fadeTo(500, 0).slideUp(500, function(){
-        $(this).remove(); 
-        });
-    }, 10000);
+
+    $('.alert').fadeOut(3000)
 
     // $(document.ready(function(){
     //     var formSubmitButton = $("btnRate");
