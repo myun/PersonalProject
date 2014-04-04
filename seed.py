@@ -61,10 +61,14 @@ def process_rating(orig_rating):
     return orig_rating
 
 def process_ingredients(ingredient_names):
-    # Example of original format of each ingredient name: '<span itemprop="name" class="name">regular <a href="/glossary/all-purpose%20flour" class="glosslink">all-purpose flour</a></span>''
+    # Example of original format of each ingredient name: '<span itemprop="name" class="name">regular <a href="/glossary/all-purpose%20flour" class="glosslink">all-purpose flour</a></span>'
     formatted_ingredients = []
-    
     unformatted_ingredients = ingredient_names.split(",")
+
+    # Due to the formatting of the mixed html text, the following word endings are separated from their 
+    # preceeding parent word (i.e. instead of "apples", may show up as "apple s" if "apple" is hyperlinked.)
+    # Track these word endings for proper processing later.
+    word_endings = ["s", "es", "ed", "ing"]
 
     for ingredient in unformatted_ingredients:
         # Extract only the text between tags '>' and '<'; results in a list of words that make up the full ingredient name
@@ -77,8 +81,9 @@ def process_ingredients(ingredient_names):
             # Add all the individual words together to form the complete ingredient name
             full_name += word
 
-            # Add a space between each word in the name
-            full_name += " "
+            # Add a space between each word in the name only if appropriate.
+            if word not in word_endings:
+                full_name += " "
 
         # Leave off the trailing space after the last word when appending to the final ingredient list
         formatted_ingredients.append(full_name[:-1].lower())

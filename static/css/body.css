@@ -200,7 +200,7 @@ li {
     color: #393939;
 }
 
-.notes-container {
+#notes-container {
     box-shadow: 5px 5px 0px #888888;
     color: #323927;
     border-radius: 10px;
@@ -210,11 +210,11 @@ li {
     padding-left: 20px;
     margin-bottom: 15px;
     margin-right: 65px;
+    overflow: auto;
 }
 
 #alert-space {
     height:50px;
-    margin-left: 35px;
 /*  position: fixed;
   top: 100px;
   left: 550;
@@ -233,4 +233,14 @@ li {
 #recipe-data {
     padding-left: 40px;
     padding-bottom: 20px;
+}
+
+#note-form {
+    height: 75px;
+}
+
+#edit-btn {
+    font-size: 23px;
+    float:right;
+    margin-left: 10px;
 }

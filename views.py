@@ -273,16 +273,15 @@ def view_recipe(username, recipe_name):
     # saved in the user's recipe box and if the user has already input a rating value for that recipe.
     saved_recipe = model.session.query(model.SavedRecipe).filter_by(user_id=user_id, recipe_id=recipe_id).first()
     if saved_recipe:
-        notes = saved_recipe.user_notes
+
+        # Line breaks (\r\n) prevent proper javascript parsing when editing notes later. 
+        # Solution: replace all instances of \r\n.
+        notes = saved_recipe.user_notes.replace("\r\n", ' ')
         user_rating = saved_recipe.user_rating
         if not user_rating:
             user_rating = "empty"
-        if notes:
-        # Sample format of notes: "note A|note B|". To be converted to a list of notes: ['note A', note B] for displaying
-        # on HTML.
-            note_list = notes.split("|")
         if not notes:
-            note_list = "empty"
+            notes = "empty"
     else:
         user_rating = "empty"
         note_list = "empty"
@@ -290,7 +289,7 @@ def view_recipe(username, recipe_name):
     processed_directions = process_directions(recipe.directions)
 
     return render_template("recipe.html", username=username, recipe=recipe, ingredient_list=ingredient_list, 
-                           category_list=new_list, user_rating=user_rating, processed_directions=processed_directions, note_list=note_list)
+                           category_list=new_list, user_rating=user_rating, processed_directions=processed_directions, notes=notes)
 
 def process_directions(directions):
     processed_directions=[]
@@ -396,12 +395,7 @@ def save_notes(username, recipe_name):
 
     saved_recipe = model.session.query(model.SavedRecipe).filter_by(user_id=user_id, recipe_id=recipe_id).first()
     if saved_recipe:
-        curr_notes = saved_recipe.user_notes
-        if curr_notes:
-            new_note = curr_notes + "|" + note
-        else:
-            new_note = note
-        saved_recipe.user_notes = new_note
+        saved_recipe.user_notes = note
         model.session.commit()
         flash ("Successfully submitted your notes!")
     else:
