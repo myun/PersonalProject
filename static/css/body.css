@@ -1,5 +1,5 @@
 body {
-    background: url("http://www.desktopaper.com/wp-content/uploads/amazing-all-wood-mac-wallpaper.jpg") no-repeat center center fixed;
+    background: #ff9147;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -28,15 +28,16 @@ h2 {
 }*/
 
 p {
-    margin-bottom: 20px;
+    /*margin-bottom: 20px;*/
     color: #393939;
+ 
 }
 
 .container {
     margin-bottom: 0px;
     /*background-color: white;
     opacity: 0.6;*/
-    background-color: rgba(255, 255, 255, 0.7);
+    background-color: rgba(255, 255, 255, 0.8);
     width: 1200px;
     box-shadow: 0 0 20px black;
     padding-left: 5%;
@@ -192,10 +193,44 @@ hr {
 
 .search-bar {
     margin-bottom: 65px;
-    margin-left: 15px;
 }
 
 li {
     list-style-type: none;
+    color: #393939;
 }
 
+.notes-container {
+    box-shadow: 5px 5px 0px #888888;
+    color: #323927;
+    border-radius: 10px;
+    background-color: #FFFAF0;
+    padding: 10px;
+    padding-bottom: 1px;
+    padding-left: 20px;
+    margin-bottom: 15px;
+    margin-right: 65px;
+}
+
+#alert-space {
+    height:50px;
+    margin-left: 35px;
+/*  position: fixed;
+  top: 100px;
+  left: 550;
+  right: 550;*/
+  /*z-index: 7000;*/
+}
+
+#directions {
+    padding-left: 40px;
+}
+
+#ingredients {
+    padding-left: 30px;
+}
+
+#recipe-data {
+    padding-left: 40px;
+    padding-bottom: 20px;
+}

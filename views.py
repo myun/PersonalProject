@@ -59,31 +59,30 @@ def login():
 @app.route("/<username>/browse_recipes")
 def browse_recipes(username):
 
-    category = model.session.query(model.CommonCategory).filter_by(name='desserts').first()
+    # # category = model.session.query(model.CommonCategory).filter_by(name='desserts').first()
     # categories = model.session.query(model.RecipeCategory).all()
-    categorized_recipes = {}
-    final_list = []
-    category_id = category.id
-    blahrecipes = model.session.query(model.RecipeCategory).filter_by(common_category_id=category_id).all()
-    for blahrecipe in blahrecipes:
-        recipe = blahrecipe.recipe
-        final_list.append(recipe)
-    categorized_recipes['desserts'] = final_list
+    # categorized_recipes = {}
+    # # final_list = []
+    # # category_id = category.id
+    # # blahrecipes = model.session.query(model.RecipeCategory).filter_by(common_category_id=category_id).all()
+    # # for blahrecipe in blahrecipes:
+    # #     recipe = blahrecipe.recipe
+    # #     final_list.append(recipe)
+    # # categorized_recipes['desserts'] = final_list
 
-    # Sort all recipes in database into categories
+    # # Sort all recipes in database into categories
     # for category in categories:
     #     common_category = category.common_category.name
-    # recipe = category.recipe
-    # if common_category not in categorized_recipes:
-    #     categorized_recipes[common_category] =[recipe]
-    # else:
-    #     categorized_recipes[common_category].append(recipe)
+    #     recipe = category.recipe
+    #     if common_category not in categorized_recipes:
+    #         categorized_recipes[common_category] =[recipe]
+    #     else:
+    #         categorized_recipes[common_category].append(recipe)
 
-    page_title = "Browse Recipes"
-    button_label = "Save to Recipe Box"
+    # page_title = "Browse Recipes"
+    # button_label = "Save to Recipe Box"
    
-    return render_template("recipe_thumbnails.html", username=username, categorized_recipes=categorized_recipes,
-                            page_title=page_title, button_label=button_label)
+    return render_template("browse_recipes.html", username=username)
 
 @app.route("/<username>/gridtest")
 def gridtest(username):
@@ -389,7 +388,7 @@ def rate_recipe(username, recipe_name):
 @app.route("/<username>/save_notes/<recipe_name>", methods=["POST"])
 def save_notes(username, recipe_name):
     note = request.form['note-form']
-    recipe = model.session.query(model.Recipe).filter_by(name=recipe_name).one()
+    recipe = model.session.query(model.Recipe).filter_by(name=recipe_name).first()
     recipe_id=recipe.id
 
     user = model.session.query(model.User).filter_by(username=username).first()
