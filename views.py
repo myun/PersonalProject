@@ -113,36 +113,28 @@ def gridtest(username):
     return render_template("gridtest.html", username=username, categorized_recipes=categorized_recipes,
                             page_title=page_title, button_label=button_label)
 
-def recipes_by_ingredient(ingredient):
+def recipes_by_ingredients(ingredient_ids):
     categorized_recipes = {}
     matching_recipes = []
 
-    try:
-        matching_common_ingredient = model.session.query(model.CommonIngredient).filter_by(name=ingredient).first()
-        ingredient_id = matching_common_ingredient.id
-
-        #use the common ingredient to find the matching recipe ingredient
+    for ingredient_id in ingredient_ids:
         matching_recipe_ingredients = model.session.query(model.RecipeIngredient).filter_by(common_ingredient_id=ingredient_id).all()
         for recipe_ingredient in matching_recipe_ingredients:
             recipe = recipe_ingredient.recipe
             matching_recipes.append(recipe)
 
-        #the matching recipe ingredient should have links to the recipes that contain it
-
-        # matching_recipes = model.session.query(model.Recipe).filter_by(id=matching_recipe_ingredient.recipe_id).all()
-
-        # Sort all queried recipes into categories.
-        for recipe in matching_recipes:
-            recipe_categories = model.session.query(model.RecipeCategory).filter_by(recipe_id=recipe.id).all()
+    # Sort all queried recipes into categories.
+    for recipe in matching_recipes:
+        recipe_categories = model.session.query(model.RecipeCategory).filter_by(recipe_id=recipe.id).all()
             
-            for category in recipe_categories:
-                category_name = category.common_category.name
-                if category_name not in categorized_recipes:
-                    categorized_recipes[category_name] =[recipe]
-                else:
+        for category in recipe_categories:
+            category_name = category.common_category.name
+            if category_name not in categorized_recipes:
+                categorized_recipes[category_name] =[recipe]
+            else:
+                curr = categorized_recipes[category_name]
+                if recipe not in curr:
                     categorized_recipes[category_name].append(recipe)
-    except:
-        pass
 
     return categorized_recipes
 
@@ -152,28 +144,45 @@ def search_recipes(username):
     # user_id = user.id
 
     searched_ingredient = request.form['searched_ingredient'].lower()
-    # Edit search to look up plural/single versions of the ingredient, plus account for uppercase
-    if searched_ingredient[-1] == 's':
-        additional_query = searched_ingredient[:-1]
+
+    if searched_ingredient == "":
+        categorized_recipes_additional_query = []
+        flash("Please enter a valid search query.")
     else:
-        additional_query = searched_ingredient + "s"
+        queries = []
 
-    categorized_recipes = recipes_by_ingredient(searched_ingredient)
-    categorized_recipes_additional_query = recipes_by_ingredient(additional_query)
-   
-    for category in categorized_recipes:
-        if category in categorized_recipes_additional_query:
-            categorized_recipes_additional_query[category].extend(categorized_recipes[category])
+        # Edit search to look up plural/single versions of the queried ingredient, plus account for uppercase
+        if searched_ingredient[-1] == 's':
+            additional_query = searched_ingredient[:-1]
+
+            # Also look for ingredient names that contain the queried ingredient. I.e. if searching for 'beef', should
+            # also return results for 'ground beef'.
+            similar_ingredients = model.session.query(model.CommonIngredient).filter(model.CommonIngredient.name.like("%" + additional_query + "%")).all()
+            print "Found ingredients are:", similar_ingredients
+
         else:
-            categorized_recipes_additional_query[category] = categorized_recipes[category]
+            additional_query = searched_ingredient + "s"
+            similar_ingredients = model.session.query(model.CommonIngredient).filter(model.CommonIngredient.name.like("%" + searched_ingredient + "%")).all()
 
-    if categorized_recipes_additional_query == {}:
-        flash("No recipes found!")
+        is_additional_query = model.session.query(model.CommonIngredient).filter_by(name=additional_query).first()
+        
+        if is_additional_query:
+            additional_query_id = is_additional_query.id
+            queries.append(additional_query_id)
+
+        for ingredient in similar_ingredients:
+            ingredient_id = ingredient.id
+            queries.append(ingredient_id)
+
+        categorized_recipes = recipes_by_ingredients(queries)
+
+        if categorized_recipes == {}:
+            flash("No recipes found!")
 
     page_title = "Search Results"
     button_label = "Save to Recipe Box"
    
-    return render_template("recipe_thumbnails.html", username=username, categorized_recipes=categorized_recipes_additional_query,
+    return render_template("recipe_thumbnails.html", username=username, categorized_recipes=categorized_recipes,
                             page_title=page_title, button_label=button_label)
 
 @app.route("/<username>/advancedsearch")
@@ -276,15 +285,18 @@ def view_recipe(username, recipe_name):
 
         # Line breaks (\r\n) prevent proper javascript parsing when editing notes later. 
         # Solution: replace all instances of \r\n.
-        notes = saved_recipe.user_notes.replace("\r\n", ' ')
+        notes = saved_recipe.user_notes
+        if notes:
+            notes.replace("\r\n", ' ')
+        else:
+            notes = "empty"
+
         user_rating = saved_recipe.user_rating
         if not user_rating:
             user_rating = "empty"
-        if not notes:
-            notes = "empty"
     else:
         user_rating = "empty"
-        note_list = "empty"
+        notes = "empty"
 
     processed_directions = process_directions(recipe.directions)
 

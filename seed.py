@@ -137,7 +137,7 @@ def load_recipe_ingredients(session, recipename, ingredient_names, ingredient_am
 def load_common_categories(session, categories):
     global common_categories
     for category in categories:
-        category = category.lower()
+        category = category.upper()
         if category not in common_categories:
             common_categories.append(category)
             new_category = model.CommonCategory(name=category)
@@ -149,7 +149,7 @@ def load_recipes_categories(session, recipe_name, categories):
     recipe_id = recipe.id
 
     for category in categories:
-        category = category.lower()
+        category = category.upper()
         category_id = session.query(model.CommonCategory).filter_by(name=category).first().id
         recipe_category = model.RecipeCategory(recipe_id=recipe_id, common_category_id=category_id)
         session.add(recipe_category)

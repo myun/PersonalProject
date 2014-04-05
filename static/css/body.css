@@ -182,13 +182,11 @@ hr {
 
 #search-btn {
     margin-left: 10px;
-    font-size: 18px;
-    padding-left:5px;
-    padding-top: 4px;
-    padding-right: 3px;
-    padding-bottom: 6px;
-/*    padding-left: 8px;
-    padding-right: 8px;*/
+    font-size: 15px;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 3px;
+    padding-bottom: 0px;
 }
 
 .search-bar {
