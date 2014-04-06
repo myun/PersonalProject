@@ -58,6 +58,20 @@ def login():
 # Display (by category) all recipes in database for user browsing purposes.
 @app.route("/<username>/browse_recipes")
 def browse_recipes(username):
+    alphabetized_recipes = {}
+
+    recipes = model.session.query(model.Recipe).all()
+    for recipe in recipes:
+        first_letter = recipe.name.strip()[0]
+        if first_letter == "\'" or first_letter == "\"":
+            first_letter = recipe.name[1]
+        if first_letter not in alphabetized_recipes:
+            alphabetized_recipes[first_letter] = [recipe]
+        else:
+            alphabetized_recipes[first_letter].append(recipe)
+
+    return render_template("browse_recipes.html", alphabetized_recipes=alphabetized_recipes, username=username)
+
 
     # # category = model.session.query(model.CommonCategory).filter_by(name='desserts').first()
     # categories = model.session.query(model.RecipeCategory).all()
@@ -81,8 +95,6 @@ def browse_recipes(username):
 
     # page_title = "Browse Recipes"
     # button_label = "Save to Recipe Box"
-   
-    return render_template("browse_recipes.html", username=username)
 
 @app.route("/<username>/gridtest")
 def gridtest(username):
@@ -113,76 +125,58 @@ def gridtest(username):
     return render_template("gridtest.html", username=username, categorized_recipes=categorized_recipes,
                             page_title=page_title, button_label=button_label)
 
-def recipes_by_ingredients(ingredient_ids):
-    categorized_recipes = {}
+def recipes_by_ingredients(ingredients):
     matching_recipes = []
 
-    for ingredient_id in ingredient_ids:
+    for ingredient in ingredients:
+        ingredient_id = ingredient.id
         matching_recipe_ingredients = model.session.query(model.RecipeIngredient).filter_by(common_ingredient_id=ingredient_id).all()
+        
         for recipe_ingredient in matching_recipe_ingredients:
             recipe = recipe_ingredient.recipe
             matching_recipes.append(recipe)
 
     # Sort all queried recipes into categories.
-    for recipe in matching_recipes:
-        recipe_categories = model.session.query(model.RecipeCategory).filter_by(recipe_id=recipe.id).all()
-            
-        for category in recipe_categories:
-            category_name = category.common_category.name
-            if category_name not in categorized_recipes:
-                categorized_recipes[category_name] =[recipe]
-            else:
-                curr = categorized_recipes[category_name]
-                if recipe not in curr:
-                    categorized_recipes[category_name].append(recipe)
+    categorized_recipes = categorize_recipes(matching_recipes)
 
     return categorized_recipes
 
-@app.route("/<username>/search", methods=['POST'])
+@app.route("/<username>/search", methods=["POST"])
 def search_recipes(username): 
-    # user = model.session.query(model.User).filter_by(username=username).first()
-    # user_id = user.id
+    search_query = request.form["search_query"].lower()
 
-    searched_ingredient = request.form['searched_ingredient'].lower()
-
-    if searched_ingredient == "":
-        categorized_recipes_additional_query = []
+    if search_query == "":
+        categorized_recipes = {}
         flash("Please enter a valid search query.")
     else:
-        queries = []
+        all_ingredient_queries = []
+        all_title_queries = []
 
-        # Edit search to look up plural/single versions of the queried ingredient, plus account for uppercase
-        if searched_ingredient[-1] == 's':
-            additional_query = searched_ingredient[:-1]
-
-            # Also look for ingredient names that contain the queried ingredient. I.e. if searching for 'beef', should
-            # also return results for 'ground beef'.
-            similar_ingredients = model.session.query(model.CommonIngredient).filter(model.CommonIngredient.name.like("%" + additional_query + "%")).all()
-            print "Found ingredients are:", similar_ingredients
-
+        if search_query[-1] == "s":
+            single_version = search_query[:-1]
+            plural_version = search_query
         else:
-            additional_query = searched_ingredient + "s"
-            similar_ingredients = model.session.query(model.CommonIngredient).filter(model.CommonIngredient.name.like("%" + searched_ingredient + "%")).all()
+            single_version = search_query
+            plural_version = search_query + "s"
 
-        is_additional_query = model.session.query(model.CommonIngredient).filter_by(name=additional_query).first()
-        
-        if is_additional_query:
-            additional_query_id = is_additional_query.id
-            queries.append(additional_query_id)
+        # Use the single (not plural) version of the search query to find related ingredients and title names. 
+        # I.e. a search query of 'beef' would return both recipes containing the ingredient 'ground beef' and 
+        # recipes with titles like 'beef stroganoff'.
+        ingredient_results = model.session.query(model.CommonIngredient).filter(model.CommonIngredient.name.like("%" + single_version + "%")).all()
+        title_results = model.session.query(model.Recipe).filter(model.Recipe.name.like("%" + single_version + "%")).all()
 
-        for ingredient in similar_ingredients:
-            ingredient_id = ingredient.id
-            queries.append(ingredient_id)
+        categorized_ingredient_recipes = recipes_by_ingredients(ingredient_results)
+        categorized_title_recipes = categorize_recipes(title_results)
 
-        categorized_recipes = recipes_by_ingredients(queries)
+        combined_recipes = combine_dictionaries(categorized_ingredient_recipes, categorized_title_recipes)
 
-        if categorized_recipes == {}:
+        if combined_recipes == {}:
             flash("No recipes found!")
 
-    page_title = "Search Results"
+    page_title = "Search Results: \"" + search_query + "\""
     button_label = "Save to Recipe Box"
    
-    return render_template("recipe_thumbnails.html", username=username, categorized_recipes=categorized_recipes,
+    return render_template("recipe_thumbnails.html", username=username, categorized_recipes=combined_recipes,
                             page_title=page_title, button_label=button_label)
 
 @app.route("/<username>/advancedsearch")
@@ -526,6 +520,35 @@ def predict_rating(recipe_id):
         recipe_rating = "empty"
     
     return recipe_rating
+
+def categorize_recipes(recipes):
+    categorized_recipes = {}
+
+    for recipe in recipes:
+        recipe_categories = model.session.query(model.RecipeCategory).filter_by(recipe_id=recipe.id).all()
+            
+        for category in recipe_categories:
+            category_name = category.common_category.name
+            if category_name not in categorized_recipes:
+                categorized_recipes[category_name] =[recipe]
+            else:
+                curr = categorized_recipes[category_name]
+                if recipe not in curr:
+                    categorized_recipes[category_name].append(recipe)
+    return categorized_recipes
+
+# Combining two dictionaries whose values are lists
+def combine_dictionaries(dict1, dict2):
+    combined_dict = dict1
+    for key in dict2:
+        if key not in combined_dict:
+            combined_dict[key] = dict2[key]
+        else: 
+            for val in dict2[key]:
+                if val not in combined_dict[key]:
+                    combined_dict[key].append(val)
+
+    return combined_dict
 
 @app.route("/logout")
 def logout():

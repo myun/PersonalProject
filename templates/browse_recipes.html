@@ -1,0 +1,60 @@
+{% extends 'master.html' %}
+{% block head %}
+<script src="/static/js/jquery-1.10.2.min.js" type="text/javascript"></script>
+
+{% endblock %}
+{% block body %}
+
+<h1>Browse Recipes</h1>
+
+<div class="row">
+    <div class="col-md-4">
+    </div>
+    <div class="col-md-4">
+        <div id="search-bar">
+            <form role="form" method="POST" action="/{{ username }}/search">
+                <div id="search-btn-group">
+                    <input type="text" class="col-md-10" name="search_query" placeholder="Search Ingredient or Title...">
+                    <button type="submit" class="btn btn-info btn-sm pull-left" id="search-btn"><span class="glyphicon glyphicon-search"></span></button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col-md-4">
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+    </div>
+    <div class="col-md-4">
+        <div id="advanced-search-container">
+            <a href='/{{ username }}/advancedsearch'>Advanced Search</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+    </div>
+</div>
+
+{% for letter in alphabetized_recipes %}
+    <h2><a id="{{ letter }}">{{ letter }}</a></h2>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="span12">
+                
+                {% for recipe in alphabetized_recipes[letter] %}
+                <div class="custom-container">
+                    <div class="recipe-wrapper">
+                        <a href="/{{ username }}/recipe/{{ recipe.name }}"><img src={{ recipe.image_URL }} alt={{ recipe.name }} width="250" height="225" class="img-thumbnail"></a>
+                        <input type="checkbox" class="chkbox" name="recipe_checkbox" value={{ recipe.id }}> 
+                    </div>
+                <p><a href="/{{ username }}/recipe/{{ recipe.name }}">{{ recipe.name }}</a></p>
+                <p><span class="stars star{{recipe.orig_rating}}"></span>({{ recipe.num_ratings }})</p>
+                </div>
+                {% endfor %}
+                
+            </div>
+        </div>
+    </div>
+    {% endfor %} 
+
+{% endblock %}

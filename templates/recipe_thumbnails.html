@@ -26,27 +26,30 @@
 
 {% endblock %}
 {% block body %}
-
 <h1>{{ page_title }}</h1> 
 
 <div class="search-bar">
 <form role="form" method="POST" action="/{{ username }}/search">
-    <input type="text" class="col-md-3" name="searched_ingredient" placeholder="Search by Ingredient...">
+    <input type="text" class="col-md-3" name="search_query" placeholder="Search by Ingredient or Title...">
     <button type="submit" class="btn btn-info btn-sm pull-left" id="search-btn"><span class="glyphicon glyphicon-search"></span></button>
 </form>
 </div>
-<a href='/{{ username }}/advancedsearch'>Advanced Search</a>
 
 <form method="POST" action="/{{ username }}/browse_recipes">
 <hr>
 
-
-
-<!-- <div class="custom-container">
+<div class="btn-group">
+  <button type="button" class="btn btn-info">Category</button>
+  <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
+    <span class="caret"></span>
+    <span class="sr-only">Toggle Dropdown</span>
+  </button>
+  <ul class="dropdown-menu" role="menu">
     {% for category in categorized_recipes %}
-        <h2><a href="#{{ category }}"> {{ category }} </a></h2>
+        <li><a href="#{{ category }}">{{ category }}</a></li>
     {% endfor %}
-</div> -->
+  </ul>
+</div>
 
     {% for message in get_flashed_messages() %}
         <li>{{ message }}</li>
@@ -55,10 +58,9 @@
     <button type="submit" class="btn btn-default" id="btnClick" name="btnClick">{{ button_label }}</button>
 
     {% for category in categorized_recipes %}
-    <h2><!-- <a name={{ category}}> --> {{ category }}<!--  </a> --></h2>
+    <h2><a id="{{ category }}">{{ category }}</a></h2>
     <div class="container-fluid">
         <div class="row">
-            
             <div class="span12">
                 
                 {% for recipe in categorized_recipes[category] %}
@@ -72,9 +74,7 @@
                 </div>
                 {% endfor %}
                 
-
             </div>
-
         </div>
     </div>
     {% endfor %} 
