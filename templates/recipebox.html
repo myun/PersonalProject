@@ -1,0 +1,54 @@
+{% extends 'master.html' %}
+
+{% block body %}
+<h1>{{ page_title }}</h1> 
+
+<form method="POST">
+<hr>
+
+<div class="btn-group">
+  <button type="button" class="btn btn-info">Category</button>
+  <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
+    <span class="caret"></span>
+    <span class="sr-only">Toggle Dropdown</span>
+  </button>
+  <ul class="dropdown-menu" role="menu">
+    {% for category in categorized_recipes %}
+        <li><a href="#{{ category }}">{{ category }}</a></li>
+    {% endfor %}
+  </ul>
+</div>
+
+    <button type="submit" class="btn btn-danger" id="btnDelete" name="btnDelete">{{ button_label }}</button>
+
+    {% for category in categorized_recipes %}
+    <h2><a id="{{ category }}">{{ category }}</a></h2>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="span12">
+                
+                {% for recipe in categorized_recipes[category] %}
+                <div class="custom-container">
+                    <div class="recipe-wrapper">
+                        <a href="/{{ username }}/recipe/{{ recipe.name }}"><img src={{ recipe.image_URL }} alt={{ recipe.name }} width="250" height="225" class="img-thumbnail"></a>
+                        <input type="checkbox" class="chkbox" name="recipe_checkbox" value={{ recipe.id }}> 
+                    </div>
+                <p><a href="/{{ username }}/recipe/{{ recipe.name }}">{{ recipe.name }}</a></p>
+                <p><span class="stars star{{recipe.orig_rating}}"></span>({{ recipe.num_ratings }})</p>
+                </div>
+                {% endfor %}
+
+            </div>
+        </div>
+    </div>
+    {% endfor %} 
+    <button type="submit" class="btn btn-danger" id="btnDelete" name="btnDelete">{{ button_label }}</button>
+    <br />
+    <hr>
+</form>
+
+<script type="text/javascript">
+    $('.alert').fadeOut(5000)
+</script>
+
+{% endblock %}

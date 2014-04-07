@@ -5,7 +5,7 @@
 
 <style type="text/css">
             body {
-                background: rgba(231, 231, 231, 0.43);
+                /*background: rgba(231, 231, 231, 0.43);*/
             }
             .free-wall {
                 margin: 15px;
@@ -28,14 +28,7 @@
 {% block body %}
 <h1>{{ page_title }}</h1> 
 
-<div class="search-bar">
-<form role="form" method="POST" action="/{{ username }}/search">
-    <input type="text" class="col-md-3" name="search_query" placeholder="Search by Ingredient or Title...">
-    <button type="submit" class="btn btn-info btn-sm pull-left" id="search-btn"><span class="glyphicon glyphicon-search"></span></button>
-</form>
-</div>
-
-<form method="POST" action="/{{ username }}/browse_recipes">
+<form method="POST" action="/{{ username }}/save_recipes">
 <hr>
 
 <div class="btn-group">
@@ -50,10 +43,6 @@
     {% endfor %}
   </ul>
 </div>
-
-    {% for message in get_flashed_messages() %}
-        <li>{{ message }}</li>
-    {% endfor %}
 
     <button type="submit" class="btn btn-default" id="btnClick" name="btnClick">{{ button_label }}</button>
 
@@ -73,7 +62,7 @@
                 <p><span class="stars star{{recipe.orig_rating}}"></span>({{ recipe.num_ratings }})</p>
                 </div>
                 {% endfor %}
-                
+
             </div>
         </div>
     </div>
@@ -84,6 +73,8 @@
 </form>
 
 <script type="text/javascript">
+    $('.alert').fadeOut(5000)
+
             var wall = new freewall("#freewall");
             wall.reset({
                 selector: '.brick',

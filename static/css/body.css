@@ -1,5 +1,6 @@
 body {
     background: #ff9147;
+ /*   background: rgba(231, 231, 231, 0.43);*/
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -149,6 +150,10 @@ hr {
     top: 50px;*/
 }
 
+#btnDelete {
+    float: right;
+}
+
 #btnRate{
     background-color: #fe9a2e;
     border-color: #fe9a2e;
@@ -181,7 +186,7 @@ hr {
 }
 
 #search-btn {
-    margin-left: 19px;
+    margin-left: 10px;
     font-size: 15px;
     padding-left: 5px;
     padding-right: 5px;
@@ -191,14 +196,16 @@ hr {
 }
 
 #search-bar {
-    padding: 20px;
-    padding-bottom: 50px;
-    background: gray;
+    /*padding: 20px;*/
+    padding-bottom: 25px;
+    /*background:rgba(152,152,152, 0.8); 
     margin: auto;
+    border-radius: 10px;*/
 }
 
 #advanced-search-container {
     padding-top:5px; 
+    padding-bottom: 35px;
 }
 
 li {
@@ -220,7 +227,7 @@ li {
 }
 
 #alert-space {
-    height:50px;
+    height:40px;
     padding-left: 25px;
 /*  position: fixed;
   top: 100px;
@@ -270,4 +277,18 @@ li {
 ::-webkit-scrollbar-thumb {
     border-radius: 0px;
     background: rgba(0,0,0,0.3); 
+}
+
+#letter-menu {
+    padding-top: 20px;
+    font-family: Times New Roman;
+    font-size: 25px;
+}
+
+#letter-menu p{
+    color: gray;
+}
+
+#letter-menu a{
+    color: orange;
 }

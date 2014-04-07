@@ -1,5 +1,6 @@
 from flask import Flask, session, render_template, redirect, request, flash, url_for
 import model
+import string
 
 app = Flask(__name__)
 app.config.from_object('config')
@@ -58,43 +59,41 @@ def login():
 # Display (by category) all recipes in database for user browsing purposes.
 @app.route("/<username>/browse_recipes")
 def browse_recipes(username):
-    alphabetized_recipes = {}
+    alphabetized_recipes = []
 
+    alphabet = string.ascii_uppercase
+
+    # Creating bucket at index 0 for recipes that start with a number. 
+    alphabetized_recipes.append({"0-9":[]})
+
+    # Create buckets for letters a-z.
+    for letter in alphabet:
+        alphabetized_recipes.append({letter:[]})
+    
     recipes = model.session.query(model.Recipe).all()
     for recipe in recipes:
-        first_letter = recipe.name.strip()[0]
-        if first_letter == "\'" or first_letter == "\"":
-            first_letter = recipe.name[1]
-        if first_letter not in alphabetized_recipes:
-            alphabetized_recipes[first_letter] = [recipe]
+        name = recipe.name.strip()
+        first_char = name[0]
+        
+        # For recipes beginning with quotes, find first alphabetical character to determine which bucket to put 
+        # the recipe in.
+        if first_char == "\'" or first_char == "\"":
+            for i in range(0, len(name)):
+                if first_char not in alphabet:
+                    first_char = name[i]
+
+        # For the first letter of the name, find its corresponding index in the alphabetized_recipes list.
+        # ordinal of 'A' is 65
+
+        if first_char in alphabet:
+            index = ord(first_char) - 64
+            alphabetized_recipes[index][first_char].append(recipe)
         else:
-            alphabetized_recipes[first_letter].append(recipe)
+            # If the first character is not in alphabet, it is a number. Put recipe into the 0-9 bucket
+            index = 0
+            alphabetized_recipes[index]["0-9"].append(recipe)
 
     return render_template("browse_recipes.html", alphabetized_recipes=alphabetized_recipes, username=username)
-
-
-    # # category = model.session.query(model.CommonCategory).filter_by(name='desserts').first()
-    # categories = model.session.query(model.RecipeCategory).all()
-    # categorized_recipes = {}
-    # # final_list = []
-    # # category_id = category.id
-    # # blahrecipes = model.session.query(model.RecipeCategory).filter_by(common_category_id=category_id).all()
-    # # for blahrecipe in blahrecipes:
-    # #     recipe = blahrecipe.recipe
-    # #     final_list.append(recipe)
-    # # categorized_recipes['desserts'] = final_list
-
-    # # Sort all recipes in database into categories
-    # for category in categories:
-    #     common_category = category.common_category.name
-    #     recipe = category.recipe
-    #     if common_category not in categorized_recipes:
-    #         categorized_recipes[common_category] =[recipe]
-    #     else:
-    #         categorized_recipes[common_category].append(recipe)
-
-    # page_title = "Browse Recipes"
-    # button_label = "Save to Recipe Box"
 
 @app.route("/<username>/gridtest")
 def gridtest(username):
@@ -179,11 +178,7 @@ def search_recipes(username):
     return render_template("recipe_thumbnails.html", username=username, categorized_recipes=combined_recipes,
                             page_title=page_title, button_label=button_label)
 
-@app.route("/<username>/advancedsearch")
-def display_advanced_search(username):
-    return render_template("advancedsearch.html", username=username)
-
-@app.route("/<username>/browse_recipes", methods=['POST'])
+@app.route("/<username>/save_recipes", methods=["POST"])
 def save_recipes(username): 
     user = model.session.query(model.User).filter_by(username=username).first()
     user_id = user.id
@@ -228,7 +223,7 @@ def recipebox(username):
     page_title = "My Recipe Box"
     button_label = "Delete"
 
-    return render_template("recipe_thumbnails.html", username=username, categorized_recipes=categorized_recipes,
+    return render_template("recipebox.html", username=username, categorized_recipes=categorized_recipes,
                             page_title=page_title, button_label=button_label)
 
 @app.route("/<username>/recipebox", methods=["POST"])
