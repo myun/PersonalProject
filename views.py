@@ -62,7 +62,6 @@ def login():
 @app.route("/<username>/browse_recipes")
 def browse_recipes(username):
     alphabetized_recipes = []
-
     alphabet = string.ascii_uppercase
 
     # Creating bucket at index 0 for recipes that start with a number. 
@@ -77,8 +76,7 @@ def browse_recipes(username):
         name = recipe.name.strip()
         first_char = name[0]
         
-        # For recipes beginning with quotes, find first alphabetical character to determine which bucket to put 
-        # the recipe in.
+        # For recipes beginning with quotes, find first letter to determine which bucket to put the recipe in.
         if first_char == "\'" or first_char == "\"":
             for i in range(0, len(name)):
                 if first_char not in alphabet:
@@ -96,22 +94,6 @@ def browse_recipes(username):
             alphabetized_recipes[index]["0-9"].append(recipe)
 
     return render_template("browse_recipes.html", alphabetized_recipes=alphabetized_recipes, username=username)
-
-def recipes_by_ingredients(ingredients):
-    matching_recipes = []
-
-    for ingredient in ingredients:
-        ingredient_id = ingredient.id
-        matching_recipe_ingredients = model.session.query(model.RecipeIngredient).filter_by(common_ingredient_id=ingredient_id).all()
-        
-        for recipe_ingredient in matching_recipe_ingredients:
-            recipe = recipe_ingredient.recipe
-            matching_recipes.append(recipe)
-
-    # Sort all queried recipes into categories.
-    categorized_recipes = categorize_recipes(matching_recipes)
-
-    return categorized_recipes
 
 @app.route("/<username>/search", methods=["POST"])
 def search_recipes(username): 
@@ -146,22 +128,35 @@ def search_recipes(username):
             flash("No recipes found!")
 
     page_title = "Search Results: \"" + search_query + "\""
-    button_label = "Save to Recipe Box"
    
     return render_template("recipe_thumbnails.html", username=username, categorized_recipes=combined_recipes,
-                            page_title=page_title, button_label=button_label)
+                            page_title=page_title)
+
+def recipes_by_ingredients(ingredients):
+    matching_recipes = []
+
+    for ingredient in ingredients:
+        ingredient_id = ingredient.id
+        matching_recipe_ingredients = model.session.query(model.RecipeIngredient).filter_by(common_ingredient_id=ingredient_id).all()
+        
+        for recipe_ingredient in matching_recipe_ingredients:
+            recipe = recipe_ingredient.recipe
+            matching_recipes.append(recipe)
+
+    # Sort all queried recipes into categories.
+    categorized_recipes = categorize_recipes(matching_recipes)
+
+    return categorized_recipes
 
 @app.route("/<username>/save_recipes", methods=["POST"])
 def save_recipes(username): 
-    user = model.session.query(model.User).filter_by(username=username).first()
-    user_id = user.id
+    user_id = get_user_id(username)
 
     recipes = request.form.getlist('recipe_checkbox')
     for recipe in recipes:
         recipe_id = int(recipe)
 
-        # Only save the new recipe to the user's recipe box if it is unique (not already existing
-        # in the box).
+        # Only save the new recipe to the user's recipe box if it is unique (not already existing in the box).
         try:
             model.session.query(model.SavedRecipe).filter_by(user_id=user_id, recipe_id=recipe_id).one()
         except:
@@ -175,34 +170,22 @@ def save_recipes(username):
 
 @app.route("/<username>/recipebox")
 def recipebox(username):
-    user = model.session.query(model.User).filter_by(username=username).first()
-    user_id = user.id
+    user_id = get_user_id(username)
 
-    categorized_recipes = {}
     saved_recipes = model.session.query(model.SavedRecipe).filter_by(user_id=user_id).all()
-    
-    # Sort all user's recipes into categories.
+    recipes = []
     for saved_recipe in saved_recipes:
         recipe_data = saved_recipe.recipe
-        recipe_categories = model.session.query(model.RecipeCategory).filter_by(recipe_id=recipe_data.id).all()
-        
-        for category in recipe_categories:
-            category_name = category.common_category.name
-            if category_name not in categorized_recipes:
-                categorized_recipes[category_name] =[recipe_data]
-            else:
-                categorized_recipes[category_name].append(recipe_data)
-
-    page_title = "My Recipe Box"
-    button_label = "Delete"
-
-    return render_template("recipebox.html", username=username, categorized_recipes=categorized_recipes,
-                            page_title=page_title, button_label=button_label)
+        recipes.append(recipe_data)
+    
+    # Sort all user's recipes into categories.
+    categorized_recipes = categorize_recipes(recipes)
+    
+    return render_template("recipebox.html", username=username, categorized_recipes=categorized_recipes)
 
 @app.route("/<username>/recipebox", methods=["POST"])
 def delete_recipes(username):
-    user = model.session.query(model.User).filter_by(username=username).first()
-    user_id = user.id
+    user_id = get_user_id(username)
 
     recipes = request.form.getlist('recipe_checkbox')
     for recipe in recipes:
@@ -220,9 +203,7 @@ def delete_recipes(username):
 def view_recipe(username, recipe_name):
     recipe = model.session.query(model.Recipe).filter_by(name=recipe_name).first()
     recipe_id = recipe.id
-
-    user = model.session.query(model.User).filter_by(username=username).first()
-    user_id = user.id
+    user_id = get_user_id(username)
 
     ingredient_list = {}
     ingredients = model.session.query(model.RecipeIngredient).filter_by(recipe_id=recipe_id).all()
@@ -231,22 +212,12 @@ def view_recipe(username, recipe_name):
         ingredient_amount = ingredient.amount 
         ingredient_list[ingredient_name] = ingredient_amount
 
-    category_list = ""
-    recipe_categories = model.session.query(model.RecipeCategory).filter_by(recipe_id=recipe_id).all()
-    for category in recipe_categories:
-        category_name = category.common_category.name
-        category_list += category_name + ", "
+    category_list = get_recipe_categories(recipe_id)
 
-    # Remove the very last ", " from the end of the list
-    new_list = category_list[:-2]
-
-    # The variable user_rating will only have a true user rating value if the recipe was both 
-    # saved in the user's recipe box and if the user has already input a rating value for that recipe.
     saved_recipe = model.session.query(model.SavedRecipe).filter_by(user_id=user_id, recipe_id=recipe_id).first()
     if saved_recipe:
 
-        # Line breaks (\r\n) prevent proper javascript parsing when editing notes later. 
-        # Solution: replace all instances of \r\n.
+        # Line breaks (\r\n) prevent proper javascript parsing when editing notes later, so replace all instances of \r\n.
         notes = saved_recipe.user_notes
         if notes:
             notes.replace("\r\n", ' ')
@@ -263,7 +234,19 @@ def view_recipe(username, recipe_name):
     processed_directions = process_directions(recipe.directions)
 
     return render_template("recipe.html", username=username, recipe=recipe, ingredient_list=ingredient_list, 
-                           category_list=new_list, user_rating=user_rating, processed_directions=processed_directions, notes=notes)
+                           category_list=category_list, user_rating=user_rating, processed_directions=processed_directions, notes=notes)
+
+def get_recipe_categories(recipe_id):
+    category_list = ""
+    recipe_categories = model.session.query(model.RecipeCategory).filter_by(recipe_id=recipe_id).all()
+    for category in recipe_categories:
+        category_name = category.common_category.name
+        category_list += category_name + ", "
+
+    # Remove the very last ", " from the end of the list
+    category_list = category_list[:-2]
+
+    return category_list
 
 def process_directions(directions):
     processed_directions=[]
@@ -271,6 +254,7 @@ def process_directions(directions):
     no_tag = " ".join(no_commas.split("\n"))
     decomposed = no_tag.split(".")
 
+    # For directions that are numbered.
     for i in range(0, len(decomposed)):
         curr = decomposed[i].strip()
         if curr.isdigit():
@@ -283,6 +267,7 @@ def process_directions(directions):
                 j += 1
             processed_directions.append(new_line)
 
+    # For directions that are not numbered, divide into chunks of specified lengths.
     if not decomposed[0].strip().isdigit():
         max_paragraph_length = 6
         if len(no_tag) <= max_paragraph_length:
@@ -298,25 +283,26 @@ def process_directions(directions):
                     processed_directions.append(new_line)
                     new_line = decomposed[i].strip() + ". "
                 
-
     return processed_directions
 
 @app.route("/<username>/recipe/<recipe_name>", methods=["POST"])
 def rate_recipe(username, recipe_name):
+    recipe_id = get_recipe_id(recipe_name)
+    user_id = get_user_id(username)
+
     rating = int(request.form['rating-input-1'])
-    recipe = model.session.query(model.Recipe).filter_by(name=recipe_name).first()
-    recipe_id = recipe.id
-
-    user = model.session.query(model.User).filter_by(username=username).first()
-    user_id = user.id
-
     saved_recipe = model.session.query(model.SavedRecipe).filter_by(user_id=user_id, recipe_id=recipe_id).first()
+    update_recipe_rating(rating, saved_recipe)
+    update_ingredient_ratings(rating, recipe_id, user_id)
+
+    return redirect(url_for("view_recipe", username=username, recipe_name=recipe_name))
+def update_recipe_rating(rating, saved_recipe):
     if saved_recipe:
         if saved_recipe.user_rating:
             # Update overall rating of the recipe to take into account the user's rating.
             # Override user's last rating.
             old_rating = saved_recipe.user_rating
-            # recipe = saved_recipe.recipe
+            recipe = saved_recipe.recipe
             new_rating = ((recipe.orig_rating * recipe.num_ratings) - old_rating + float(rating))/(recipe.num_ratings)
             recipe.orig_rating = int(round(new_rating))
             saved_recipe.user_rating = rating
@@ -328,7 +314,7 @@ def rate_recipe(username, recipe_name):
 
             # Find the new rating using averages.
             new_rating = ((recipe.orig_rating * recipe.num_ratings) + float(rating))/(recipe.num_ratings + 1)
-            # recipe = saved_recipe.recipe
+            recipe = saved_recipe.recipe
             recipe.orig_rating = int(round(new_rating))
             recipe.num_ratings += 1
             model.session.commit()
@@ -336,13 +322,14 @@ def rate_recipe(username, recipe_name):
     else:
         saved_recipe = model.SavedRecipe(user_id=user_id, recipe_id=recipe_id, user_rating=rating)
         model.session.add(saved_recipe)
-        # recipe = saved_recipe.recipe
+        recipe = saved_recipe.recipe
         new_rating = ((recipe.orig_rating * recipe.num_ratings) + float(rating))/(recipe.num_ratings + 1)
         recipe.orig_rating = int(round(new_rating))
         recipe.num_ratings += 1
         model.session.commit()
-        flash ("Successfully saved to your recipe box and submitted your rating!")
+        flash ("Successfully saved recipe and submitted your rating!")
 
+def update_ingredient_ratings(rating, recipe_id, user_id):
     recipe_ingredients = model.session.query(model.RecipeIngredient).filter_by(recipe_id=recipe_id).all()
     for recipe_ingredient in recipe_ingredients:
         ingredient_id = recipe_ingredient.common_ingredient_id
@@ -356,17 +343,12 @@ def rate_recipe(username, recipe_name):
             model.session.add(ingredient_rating)
             model.session.commit()
 
-    return redirect(url_for("view_recipe", username=username, recipe_name=recipe_name))
-
 @app.route("/<username>/save_notes/<recipe_name>", methods=["POST"])
 def save_notes(username, recipe_name):
+    recipe_id = get_recipe_id(recipe_name)
+    user_id = get_user_id(username)
+
     note = request.form['note-form']
-    recipe = model.session.query(model.Recipe).filter_by(name=recipe_name).first()
-    recipe_id=recipe.id
-
-    user = model.session.query(model.User).filter_by(username=username).first()
-    user_id = user.id
-
     saved_recipe = model.session.query(model.SavedRecipe).filter_by(user_id=user_id, recipe_id=recipe_id).first()
     if saved_recipe:
         saved_recipe.user_notes = note
@@ -376,20 +358,16 @@ def save_notes(username, recipe_name):
         saved_recipe = model.SavedRecipe(user_id=user_id, recipe_id=recipe_id, user_notes=note)
         model.session.add(saved_recipe)
         model.session.commit()
-        flash ("Successfully saved to your recipe box and submitted your notes!")
+        flash ("Successfully saved recipe and submitted your notes!")
 
     return redirect(url_for("view_recipe", username=username, recipe_name=recipe_name))
 
 @app.route("/<username>/save_individual_recipe/<recipe_name>", methods=['POST'])
 def save_individual_recipe(username, recipe_name): 
-    user = model.session.query(model.User).filter_by(username=username).first()
-    user_id = user.id
+    user_id = get_user_id(username)
+    recipe_id = get_recipe_id(recipe_name)
 
-    recipe = model.session.query(model.Recipe).filter_by(name=recipe_name).one()
-    recipe_id=recipe.id
-
-    # Only save the new recipe to the user's recipe box if it is unique (not already existing
-    # in the box).
+    # Only save the new recipe to the user's recipe box if it is unique (not already existing in the box).
     
     isPresent = model.session.query(model.SavedRecipe).filter_by(user_id=user_id, recipe_id=recipe_id).first()
     if not isPresent:
@@ -404,8 +382,7 @@ def save_individual_recipe(username, recipe_name):
 
 @app.route("/<username>/suggest_recipes")
 def suggest_recipes(username):
-    user = model.session.query(model.User).filter_by(username=username).first()
-    user_id = user.id
+    user_id = get_user_id(username)
     
     # We will only consider recommending recipes which the user has not already rated or put in his/her recipe box.
     recipe_candidates = model.session.query(model.Recipe).all()
@@ -475,6 +452,22 @@ def predict_rating(user_id, recipe_id):
     
     return recipe_rating
 
+@app.route("/logout")
+def logout():
+    session.clear()
+    flash("You are now logged out.")
+    return redirect(url_for("login"))
+
+def get_user_id(username):
+    user = model.session.query(model.User).filter_by(username=username).first()
+    user_id = user.id
+    return user_id
+
+def get_recipe_id(recipe_name):
+    recipe = model.session.query(model.Recipe).filter_by(name=recipe_name).first()
+    recipe_id = recipe.id
+    return recipe_id
+
 def categorize_recipes(recipes):
     categorized_recipes = {}
 
@@ -503,12 +496,6 @@ def combine_dictionaries(dict1, dict2):
                     combined_dict[key].append(val)
 
     return combined_dict
-
-@app.route("/logout")
-def logout():
-    session.clear()
-    flash("You are now logged out.")
-    return redirect(url_for("login"))
 
 if __name__ == "__main__":
     app.run(debug = True)

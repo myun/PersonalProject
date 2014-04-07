@@ -19,25 +19,32 @@ h2 {
     color: #393939;
     text-align: left;
     margin-top: 30px;
-    /*text-decoration: underline;*/
     font-size: 27px;
 }
 
-/*h1, h2, h3 {
-    margin-bottom: 15px;
-    margin-top: 25px;
-}*/
-
 p {
-    /*margin-bottom: 20px;*/
     color: #393939;
  
 }
 
+img {
+    padding-top: 15px;
+}
+
+
+li {
+    list-style-type: none;
+    color: #393939;
+}
+
+hr {
+    height:3px;
+    color: #393939;
+    background: #393939;
+}
+
 .container {
     margin-bottom: 0px;
-    /*background-color: white;
-    opacity: 0.6;*/
     background-color: rgba(255, 255, 255, 0.8);
     width: 1200px;
     box-shadow: 0 0 20px black;
@@ -48,6 +55,12 @@ p {
 }
 
 .custom-container {
+    display: inline-block;
+    vertical-align: top;
+    margin-left: 4%;
+    margin-right:4%;
+    margin-top: 20px;
+    float: top;
     width: 25%;
 }
 
@@ -55,10 +68,7 @@ p {
     text-align: center;
 }
 
-img {
-    padding-top: 15px;
-}
-
+/* Code for displaying static star ratings. */
 span.stars {
     background: url("/static/images/stars-blue.png") top left;
     display: inline-block;
@@ -87,80 +97,9 @@ span.star4 {
 span.star5 {
     background-position: 0 0;
 }
+/* End code for displaying static star ratings. */
 
-/* For Plus Sign Icon - Visible by Hovering */
-
-/*.add_icon a{
-visibility:hidden;
-}
-
-.add_icon:hover a {
- visibility:visible;
-}*/
-
-/*.recipe-wrapper {
-    position: relative;
-    width: 255px;
-    height:250px;
-}*/
-
-/*.recipe-wrapper .recipe-thumbnail {
-    position: relative;
-}
-
-.recipe-wrapper .add_icon {
-    position: absolute;
-    bottom: 5px;
-    right: 40px;
-    float: right;
-}*/
-
-input[type="checkbox"] {
-    /*position: absolute;*/
-    /*bottom: 65px;*/
-    /*right: 30px;*/
-    /*float: left;*/
-    float: right;
-    margin-left: 5px;
-}
-
-.custom-container {
-    display: inline-block;
-    vertical-align: top;
-    margin-left: 4%;
-    margin-right:4%;
-    margin-top: 20px;
-    float: top;
-}
-
-hr {
-    height:3px;
-    color: #393939;
-    background: #393939;
-}
-
-#btnClick {
-    float: right;
-    background-color: #fe9a2e;
-    border-color: #fe9a2e;
-    color: #ffffff;
-
-    /*position: fixed;
-    left: 0;
-    top: 50px;*/
-}
-
-#btnDelete {
-    float: right;
-}
-
-#btnRate{
-    background-color: #fe9a2e;
-    border-color: #fe9a2e;
-    color: #ffffff;
-    position:absolute;
-}
-
+/* Code for displaying dynamic stars for user rating input. */
 .rating {
     display: inline-block;
     padding-left:25px;
@@ -184,6 +123,30 @@ hr {
     /*Display empty star.*/
     background: url('/static/images/stars.png') 0 -21px;
 }
+/* End code for user rating input stars. */
+
+input[type="checkbox"] {
+    float: right;
+    margin-left: 5px;
+}
+
+#btnClick {
+    float: right;
+    background-color: #fe9a2e;
+    border-color: #fe9a2e;
+    color: #ffffff;
+}
+
+#btnDelete {
+    float: right;
+}
+
+#btnRate{
+    background-color: #fe9a2e;
+    border-color: #fe9a2e;
+    color: #ffffff;
+    position:absolute;
+}
 
 #search-btn {
     margin-left: 10px;
@@ -195,22 +158,35 @@ hr {
     margin-right: 0px;
 }
 
+#edit-btn {
+    font-size: 23px;
+    float:right;
+    margin-left: 10px;
+}
+
+#btnSave {
+    margin-bottom: 25px;
+    margin-right: 15px;
+    float: right;
+    background-color: #fe9a2e;
+    border-color: #fe9a2e;
+    color: #ffffff;
+}
+
+#btnSave2 {
+    margin-right: 15px;
+    float: right;
+    background-color: #fe9a2e;
+    border-color: #fe9a2e;
+    color: #ffffff;
+}
+
 #search-bar {
     /*padding: 20px;*/
     padding-bottom: 25px;
     /*background:rgba(152,152,152, 0.8); 
     margin: auto;
     border-radius: 10px;*/
-}
-
-#advanced-search-container {
-    padding-top:5px; 
-    padding-bottom: 35px;
-}
-
-li {
-    list-style-type: none;
-    color: #393939;
 }
 
 #notes-container {
@@ -226,37 +202,26 @@ li {
     overflow: auto;
 }
 
+#note-form {
+    height: 75px;
+}
+
 #alert-space {
     height:40px;
     padding-left: 25px;
-/*  position: fixed;
-  top: 100px;
-  left: 550;
-  right: 550;*/
-  /*z-index: 7000;*/
-}
-
-#directions {
-    padding-left: 40px;
 }
 
 #ingredients {
     padding-left: 30px;
 }
 
+#directions {
+    padding-left: 40px;
+}
+
 #recipe-data {
     padding-left: 40px;
     padding-bottom: 20px;
-}
-
-#note-form {
-    height: 75px;
-}
-
-#edit-btn {
-    font-size: 23px;
-    float:right;
-    margin-left: 10px;
 }
 
 .dropdown-menu {
@@ -265,6 +230,7 @@ li {
     overflow-y: auto;
 }
 
+/* Code for improving scrollbar (used in category dropdown menu). */
 ::-webkit-scrollbar {
     width: 10px;
 }
@@ -278,20 +244,16 @@ li {
     border-radius: 0px;
     background: rgba(0,0,0,0.3); 
 }
+/* End code for scrollbars. */
 
+/* Code for alphabetical navigation menu on 'Browse Recipes' page. */
 #letter-menu {
     padding-top: 20px;
     font-family: Times New Roman;
 }
 
-#letter-menu p{
-    color: gray;
-}
-
-#letter-menu a{
-    color: orange;
-}
-
 .pager li > a{
     padding: 5px 10px;
+    color: orange;
 }
+/* End code for alphabetical navigation menu. */
