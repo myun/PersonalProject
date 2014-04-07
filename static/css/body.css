@@ -282,7 +282,6 @@ li {
 #letter-menu {
     padding-top: 20px;
     font-family: Times New Roman;
-    font-size: 25px;
 }
 
 #letter-menu p{
@@ -291,4 +290,8 @@ li {
 
 #letter-menu a{
     color: orange;
+}
+
+.pager li > a{
+    padding: 5px 10px;
 }

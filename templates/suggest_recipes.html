@@ -1,0 +1,114 @@
+{% extends 'master.html' %}
+{% block head %}
+
+<!-- <link href="/static/css/search.css" rel="stylesheet">--> 
+<link href="/static/css/style.css" rel="stylesheet">
+ <link href="/static/css/gridtest2.css" rel="stylesheet">
+
+<script src="/static/js/jquery-1.10.2.min.js" type="text/javascript"></script>
+<script src="/static/js/freewall.js" type="text/javascript"></script>
+<!-- <script src="/static/js/jquery.lazyload.min.js" type="text/javascript"></script>
+ -->
+<style type="text/css">
+            .free-wall {
+                margin: 15px;
+            }
+/*            .brick {
+                width: 221.2px;
+            }*/
+            .info {
+                padding: 15px;
+                color: #333;
+            }
+            .brick img {
+                margin: 0px;
+                padding: 0px;
+                display: block;
+            }
+            h4 {
+                text-shadow: 1px 1px 0 rgba(0,0,0,0.5);
+                font-family: 'Lato', Georgia, Helvetica, Tahoma;
+                margin: 10px 0;
+                font-weight: normal;
+            }
+
+            span {
+                float:left;
+                position:relative;
+                margin-right:5px;
+                bottom:2px;
+            }
+}
+</style>
+
+{% endblock %}
+{% block body %}
+
+<!-- <form method="POST" action="/{{ username }}/search" class="form-wrapper cf">
+  <input name="searched_ingredient" type="text" placeholder="Search by ingredient...">
+  <button type="submit">Search</button>
+</form> -->
+<h1>Recommended for You</h1> 
+<hr>
+
+<!-- <div class="search-bar">
+<form role="form" method="POST">
+    <input type="text" class="col-md-3" placeholder="Search by Ingredient...">
+    <button type="submit" class="btn btn-info btn-sm pull-left" id="search-btn"><span class="glyphicon glyphicon-search"></span></button>
+</form>
+</div> -->
+
+<form method="POST" action="/{{ username }}/browse_recipes">
+    <div id="freewall" class="free-wall">
+        {% for recipedata in recipes %}
+        <!-- recipe = recipedata[0]
+            rating = recipedata[1] -->
+
+        <!-- Scaling recipe thumbnails by factor of predicted rating -->
+        <div class="brick" style="width:{{ recipedata[1]*60 }}px;">
+
+            <img src={{ recipedata[0].image_URL }} width="100%">
+            <div class="info">
+                <input type="checkbox" class="chkbox" name="recipe_checkbox" value={{ recipedata[0].id }}> 
+                <h4><a href="/{{ username }}/recipe/{{ recipedata[0].name }}" style="color:black">{{ recipedata[0].name }}</a></h4>
+                <p><span class="stars star{{recipedata[0].orig_rating}}"></span> ({{ recipedata[0].num_ratings }})</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</form>
+
+<hr>
+
+<script type="text/javascript">
+            var wall = new freewall("#freewall");
+            wall.reset({
+                selector: '.brick',
+                animate: true,
+                // Anchor for re-scaling the bricks
+                cellW: 150,
+                cellH: 'auto',
+                onResize: function() {
+                    wall.fitWidth();
+                }
+            });
+            
+            var images = wall.container.find('.brick');
+            
+            var length = images.length;
+            images.css({visibility: 'hidden'});
+            images.find('img').load(function() {
+                -- length;
+                if (!length) {
+                    setTimeout(function() {
+                        images.css({visibility: 'visible'});
+                        wall.fitWidth();
+                    }, 505);
+                }
+            });
+
+            //setTimeout has 505.
+
+        </script>
+
+{% endblock %}

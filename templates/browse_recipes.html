@@ -45,11 +45,11 @@
 </div> -->
 
 <div class="centered-text" id="letter-menu">
-    <p> |
+    <ul class="pager">
     {% for letter in alphabetized_recipes %}
-         <a href="#{{ letter.keys()[0] }}">{{ letter.keys()[0] }} </a> |
+        <li><a href="#{{ letter.keys()[0] }}">{{ letter.keys()[0] }} </a></li>
     {% endfor %} 
-    </p>
+</ul>
 </div>
 
 <form method="POST" action="/{{ username }}/save_recipes">

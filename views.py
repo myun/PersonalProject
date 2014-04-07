@@ -6,6 +6,8 @@ app = Flask(__name__)
 app.config.from_object('config')
 import forms
 
+import random
+
 @app.route("/", methods=['GET', 'POST'])
 def index():
 
@@ -94,35 +96,6 @@ def browse_recipes(username):
             alphabetized_recipes[index]["0-9"].append(recipe)
 
     return render_template("browse_recipes.html", alphabetized_recipes=alphabetized_recipes, username=username)
-
-@app.route("/<username>/gridtest")
-def gridtest(username):
-  
-    category = model.session.query(model.CommonCategory).filter_by(name='desserts').first()
-    # categories = model.session.query(model.RecipeCategory).all()
-    categorized_recipes = {}
-    final_list = []
-    category_id = category.id
-    blahrecipes = model.session.query(model.RecipeCategory).filter_by(common_category_id=category_id).all()
-    for blahrecipe in blahrecipes:
-        recipe = blahrecipe.recipe
-        final_list.append(recipe)
-    categorized_recipes['desserts'] = final_list
-
-    # Sort all recipes in database into categories
-    # for category in categories:
-    #     common_category = category.common_category.name
-    # recipe = category.recipe
-    # if common_category not in categorized_recipes:
-    #     categorized_recipes[common_category] =[recipe]
-    # else:
-    #     categorized_recipes[common_category].append(recipe)
-
-    page_title = "Browse Recipes"
-    button_label = "Save to Recipe Box"
-   
-    return render_template("gridtest.html", username=username, categorized_recipes=categorized_recipes,
-                            page_title=page_title, button_label=button_label)
 
 def recipes_by_ingredients(ingredients):
     matching_recipes = []
@@ -373,7 +346,7 @@ def rate_recipe(username, recipe_name):
     recipe_ingredients = model.session.query(model.RecipeIngredient).filter_by(recipe_id=recipe_id).all()
     for recipe_ingredient in recipe_ingredients:
         ingredient_id = recipe_ingredient.common_ingredient_id
-        rated = model.session.query(model.RatedIngredient).filter_by(common_ingredient_id=ingredient_id).first()
+        rated = model.session.query(model.RatedIngredient).filter_by(common_ingredient_id=ingredient_id, user_id=user_id).first()
         if rated:
             new_rating = ((rated.rating * rated.num_occurrences) + float(rating))/(rated.num_occurrences + 1)
             rated.num_occurrences += 1
@@ -439,48 +412,34 @@ def suggest_recipes(username):
     candidate_ids = []
     for recipe_candidate in recipe_candidates:
         id = recipe_candidate.id
-        isSaved = model.session.query(model.SavedRecipe).filter_by(recipe_id=id).first()
+        isSaved = model.session.query(model.SavedRecipe).filter_by(recipe_id=id, user_id=user_id).first()
         if not isSaved:
             candidate_ids.append(id)
 
     results = []
     for candidate_id in candidate_ids:
-        predicted_rating = predict_rating(candidate_id)
+        predicted_rating = predict_rating(user_id, candidate_id)
         if predicted_rating != "empty":
             results.append([candidate_id, predicted_rating])
 
-    sorted_results = sorted(results, key=lambda x: x[1])
+    sorted_results = sorted(results, key=lambda x: x[1], reverse=True)
 
     max_display = 15
     if len(sorted_results) > max_display:
-        sorted_results = sorted_results[:(max_display-1)]
+        sorted_results = sorted_results[:(max_display)]
 
     recipes = []
     for result in sorted_results:
         recipe_id = result[0]
+        recipe_rating = result[1]
         recipe = model.session.query(model.Recipe).filter_by(id=recipe_id).first()
-        recipes.append(recipe)
+        recipes.append([recipe, recipe_rating])
 
-    categorized_recipes = {}
-    
-    # Sort all user's recipes into categories.
-    for recipe in recipes:
-        recipe_categories = model.session.query(model.RecipeCategory).filter_by(recipe_id=recipe.id).all()
-        
-        for category in recipe_categories:
-            category_name = category.common_category.name
-            if category_name not in categorized_recipes:
-                categorized_recipes[category_name] =[recipe]
-            else:
-                categorized_recipes[category_name].append(recipe)
-
-    page_title = "Recommended for You"
     button_label = "Save to Recipe Box"
     
-    return render_template("recipe_thumbnails.html", username=username, categorized_recipes=categorized_recipes,
-                            page_title=page_title, button_label=button_label)
+    return render_template("suggest_recipes.html", username=username, recipes=recipes)
 
-def predict_rating(recipe_id):
+def predict_rating(user_id, recipe_id):
     ingredient_ratings = {}
 
     # Get all ingredients associated with the given recipe.
@@ -492,7 +451,7 @@ def predict_rating(recipe_id):
 
     # Get/derive all ratings for the ingredients.
     for ingredient_id in ingredient_ids:
-        rated_ingredient = model.session.query(model.RatedIngredient).filter_by(common_ingredient_id=ingredient_id).first()
+        rated_ingredient = model.session.query(model.RatedIngredient).filter_by(common_ingredient_id=ingredient_id, user_id=user_id).first()
         if rated_ingredient:
             user_rating = rated_ingredient.rating
             num_occurrences = rated_ingredient.num_occurrences
@@ -500,13 +459,13 @@ def predict_rating(recipe_id):
             # If it is a new ingredient with no user rating, assume it has a neutral rating (3/5)
             user_rating = 3
             num_occurrences = 1
-        ingredient_ratings[ingredient_id] = [user_rating, num_occurrences]
+        ingredient_ratings[ingredient_id] = user_rating
 
     # Calculate the average of all ingredient ratings to derive the recipe's overall rating.
     numerator = 0
     denominator = 0
     for ingredient_rating in ingredient_ratings:
-        numerator += ((ingredient_ratings[ingredient_rating][0]) * (ingredient_ratings[ingredient_rating][1]))
+        numerator += ((ingredient_ratings[ingredient_rating]))
         denominator += 1
 
     if numerator != 0:
