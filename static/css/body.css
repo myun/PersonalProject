@@ -68,6 +68,10 @@ hr {
     text-align: center;
 }
 
+.img-thumbnail {
+    height:225px;
+}
+
 /* Code for displaying static star ratings. */
 span.stars {
     background: url("/static/images/stars-blue.png") top left;
