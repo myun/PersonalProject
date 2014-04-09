@@ -287,22 +287,18 @@ def process_directions(directions):
 
 @app.route("/<username>/recipe/<recipe_name>", methods=["POST"])
 def rate_recipe(username, recipe_name):
-    recipe_id = get_recipe_id(recipe_name)
+    recipe = model.session.query(model.Recipe).filter_by(name=recipe_name).first()
+    recipe_id = recipe.id
     user_id = get_user_id(username)
 
     rating = int(request.form['rating-input-1'])
     saved_recipe = model.session.query(model.SavedRecipe).filter_by(user_id=user_id, recipe_id=recipe_id).first()
-    update_recipe_rating(rating, saved_recipe)
-    update_ingredient_ratings(rating, recipe_id, user_id)
-
-    return redirect(url_for("view_recipe", username=username, recipe_name=recipe_name))
-def update_recipe_rating(rating, saved_recipe):
     if saved_recipe:
         if saved_recipe.user_rating:
             # Update overall rating of the recipe to take into account the user's rating.
             # Override user's last rating.
             old_rating = saved_recipe.user_rating
-            recipe = saved_recipe.recipe
+            # recipe = saved_recipe.recipe
             new_rating = ((recipe.orig_rating * recipe.num_ratings) - old_rating + float(rating))/(recipe.num_ratings)
             recipe.orig_rating = int(round(new_rating))
             saved_recipe.user_rating = rating
@@ -314,7 +310,7 @@ def update_recipe_rating(rating, saved_recipe):
 
             # Find the new rating using averages.
             new_rating = ((recipe.orig_rating * recipe.num_ratings) + float(rating))/(recipe.num_ratings + 1)
-            recipe = saved_recipe.recipe
+            # recipe = saved_recipe.recipe
             recipe.orig_rating = int(round(new_rating))
             recipe.num_ratings += 1
             model.session.commit()
@@ -322,12 +318,15 @@ def update_recipe_rating(rating, saved_recipe):
     else:
         saved_recipe = model.SavedRecipe(user_id=user_id, recipe_id=recipe_id, user_rating=rating)
         model.session.add(saved_recipe)
-        recipe = saved_recipe.recipe
+        # recipe = saved_recipe.recipe
         new_rating = ((recipe.orig_rating * recipe.num_ratings) + float(rating))/(recipe.num_ratings + 1)
         recipe.orig_rating = int(round(new_rating))
         recipe.num_ratings += 1
         model.session.commit()
-        flash ("Successfully saved recipe and submitted your rating!")
+        flash ("Successfully saved to your recipe box and submitted your rating!")
+    update_ingredient_ratings(rating, recipe_id, user_id)
+
+    return redirect(url_for("view_recipe", username=username, recipe_name=recipe_name))
 
 def update_ingredient_ratings(rating, recipe_id, user_id):
     recipe_ingredients = model.session.query(model.RecipeIngredient).filter_by(recipe_id=recipe_id).all()
