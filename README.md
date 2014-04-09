@@ -13,4 +13,4 @@ On the individual recipe pages, users are able to rate, save, and annotate the r
 
 Now, what if a user wants to view more recipes than what is recommended to them? Additional recipes can always be accessed through the "Browse Recipes" page. There, he or she can search through the whole database of recipes.  
 
-Edibles is written using Python, SQLite, SQLAlchemy, Flask, Jinja, and HTML, CSS and Javascript. 
+Edibles is written using Python, SQLite, SQLAlchemy, Flask, Jinja, and HTML, CSS and JavaScript. 
